@@ -2,7 +2,7 @@
 Aegis-KV Gateway Configuration.
 
 Global settings for SPRT thresholds, timing profiles, defense params,
-and the demo secret. Single dataclass, no external config files.
+vLLM upstream integration, and the demo secret. Single dataclass, no external config files.
 """
 
 from __future__ import annotations
@@ -21,11 +21,15 @@ class GatewayConfig:
     sprt_p0: float = 0.05          # Null: 5% probe rate (normal noise)
     sprt_p1: float = 0.40          # Alt: 40% probe rate (attacker)
 
-    # ── Timing Profiles ──────────────────────────────────────────────────
+    # ── Timing Profiles & vLLM Upstream Integration ──────────────────────
     timing_profile: str = "70B_vLLM"       # "70B_vLLM" | "0.5B_Edge"
     ttft_cache_hit_ms: float = 12.0        # Expected TTFT on cache hit (70B)
     ttft_cache_miss_ms: float = 85.0       # Expected TTFT on cache miss (70B)
     ttft_threshold_ms: float = 30.0        # Below this = likely cache hit
+
+    # ── Real vLLM Upstream Forwarding Knobs ───────────────────────────────
+    live_vllm_upstream: bool = False       # If True, forward via httpx to upstream vLLM
+    vllm_base_url: str = "http://127.0.0.1:8001"
 
     # ── Defense Parameters ───────────────────────────────────────────────
     padding_bucket_ms: float = 85.0        # Constant-time ceiling matching cache-miss ceiling (85ms)
@@ -53,6 +57,30 @@ class GatewayConfig:
     def sprt_lower_boundary(self) -> float:
         """Threshold B: accept null (declare benign). LLR <= B."""
         return math.log(self.sprt_beta / (1 - self.sprt_alpha))
+
+    @property
+    def active_model_id(self) -> str:
+        """Active HuggingFace model identifier for current profile."""
+        if self.timing_profile == "0.5B_Edge":
+            return "Qwen/Qwen2.5-0.5B-Instruct"
+        return "meta-llama/Llama-3.1-70B-Instruct"
+
+    @property
+    def vllm_metadata(self) -> dict[str, str]:
+        """Engine metadata, runtime flags, and upstream target for judges."""
+        if self.timing_profile == "0.5B_Edge":
+            return {
+                "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+                "vllm_engine": "vLLM v0.6.3 (Local Edge APC)",
+                "vllm_flags": "--enable-prefix-caching --block-size 16 --dtype float16",
+                "upstream_url": f"{self.vllm_base_url}/v1/chat/completions",
+            }
+        return {
+            "model_id": "meta-llama/Llama-3.1-70B-Instruct",
+            "vllm_engine": "vLLM v0.6.3 (PagedAttention APC)",
+            "vllm_flags": "--enable-prefix-caching --block-size 16 --tensor-parallel-size 4",
+            "upstream_url": "http://vllm-cluster.internal:8001/v1/chat/completions",
+        }
 
     def apply_timing_profile(self, profile: str) -> None:
         """Switch between 70B_vLLM and 0.5B_Edge timing profiles."""

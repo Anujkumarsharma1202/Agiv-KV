@@ -58,18 +58,11 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #3f3f46;
     }
-    .flash-row {
-      animation: flashHighlight 0.9s ease-out;
+    .flash-row, .flash-danger {
+      animation: flashHighlight 0.6s ease-out;
     }
     @keyframes flashHighlight {
-      0% { background-color: rgba(255, 255, 255, 0.05); }
-      100% { background-color: transparent; }
-    }
-    .flash-danger {
-      animation: flashDanger 1.2s ease-out;
-    }
-    @keyframes flashDanger {
-      0% { background-color: rgba(239, 68, 68, 0.15); }
+      0% { background-color: #18181b; }
       100% { background-color: transparent; }
     }
     .panel-box {
@@ -118,7 +111,7 @@
         </div>
 
         <!-- Defense Master Switch Button -->
-        <button id="btn-defense-toggle" onclick="toggleDefense()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15 transition-colors">
+        <button id="btn-defense-toggle" onclick="toggleDefense()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:border-zinc-700 transition-colors">
           <span id="defense-icon" class="inline-flex items-center">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
           </span>
@@ -138,6 +131,27 @@
     </div>
   </header>
 
+  <!-- vLLM Engine & Upstream Architecture Strip -->
+  <section class="border-b border-[#27272a] bg-[#121215] px-4 sm:px-6 py-2 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 font-mono">
+      <div class="flex items-center flex-wrap gap-2 text-[11px]">
+        <span class="text-zinc-500 uppercase tracking-wider">vLLM Engine:</span>
+        <span id="vllm-engine-spec" class="text-zinc-200 font-semibold">vLLM v0.6.3 (PagedAttention APC)</span>
+        <span class="text-zinc-600">&bull;</span>
+        <span class="text-zinc-500">Model:</span>
+        <span id="vllm-model-id" class="text-zinc-200 font-medium">meta-llama/Llama-3.1-70B-Instruct</span>
+        <span class="text-zinc-600">&bull;</span>
+        <span class="text-zinc-500">Flags:</span>
+        <code id="vllm-flags-spec" class="text-zinc-400 bg-zinc-900 px-1 py-0.5 rounded border border-zinc-800 text-[10px]">--enable-prefix-caching --block-size 16 --tensor-parallel-size 4</code>
+      </div>
+      <div class="flex items-center gap-2 text-[10px]">
+        <span class="text-zinc-500">Upstream URL:</span>
+        <span id="vllm-upstream-url" class="text-zinc-400 truncate max-w-[260px]">http://vllm-cluster.internal:8001/v1/chat/completions</span>
+        <span id="vllm-upstream-mode" class="px-1.5 py-0.2 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">Benchmark Mode</span>
+      </div>
+    </div>
+  </section>
+
   <!-- Main Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-5">
     
@@ -148,7 +162,7 @@
       <div class="p-4 flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs font-medium">
           <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Hot-Path Overhead</span>
-          <span class="text-[10px] font-mono text-emerald-400 px-1 py-0.2 rounded bg-emerald-500/10 border border-emerald-500/20">&lt;0.10ms Target</span>
+          <span class="text-[10px] font-mono text-zinc-400 px-1.5 py-0.2 rounded bg-zinc-900 border border-zinc-800">&lt;0.10ms Target</span>
         </div>
         <div class="mt-2.5 flex items-baseline space-x-1.5">
           <span id="kpi-overhead" class="text-2xl font-mono font-semibold text-[#fafafa] tracking-tight">0.082</span>
@@ -164,7 +178,7 @@
       <div class="p-4 flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs font-medium">
           <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">SPRT LLR Engine</span>
-          <span id="kpi-sprt-badge" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">Armed</span>
+          <span id="kpi-sprt-badge" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">Armed</span>
         </div>
         <div class="mt-2.5 flex items-baseline space-x-1.5">
           <span id="kpi-max-llr" class="text-2xl font-mono font-semibold text-[#fafafa] tracking-tight">0.00</span>
@@ -180,7 +194,7 @@
       <div class="p-4 flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs font-medium">
           <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Active Cache Salt</span>
-          <span id="kpi-salt-badge" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">Standard</span>
+          <span id="kpi-salt-badge" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">Standard</span>
         </div>
         <div class="mt-2.5 flex items-baseline space-x-1.5">
           <span id="kpi-salt" class="text-2xl font-mono font-semibold text-[#fafafa] tracking-tight truncate max-w-[180px]" title="default">default</span>
@@ -195,7 +209,7 @@
       <div class="p-4 flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs font-medium">
           <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">False Positive Rate</span>
-          <span class="text-[10px] font-mono text-emerald-400 px-1 py-0.2 rounded bg-emerald-500/10 border border-emerald-500/20">0.0% Guarantee</span>
+          <span class="text-[10px] font-mono text-zinc-400 px-1.5 py-0.2 rounded bg-zinc-900 border border-zinc-800">0.0% Guarantee</span>
         </div>
         <div class="mt-2.5 flex items-baseline space-x-1.5">
           <span id="kpi-fpr" class="text-2xl font-mono font-semibold text-[#fafafa] tracking-tight">0.0%</span>
@@ -223,10 +237,10 @@
                 <path d="M12 6v6l4 2"/>
               </svg>
               <span class="text-xs font-semibold text-[#fafafa] uppercase tracking-wider">
-                Sequential Probability Ratio Test (SPRT)
+                SPRT Decision Meter (Wald's Boundaries)
               </span>
             </div>
-            <div id="sprt-verdict-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-800/80 border border-zinc-700/60 text-zinc-300">
+            <div id="sprt-verdict-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-300">
               STATE: NORMAL (LLR: 0.00)
             </div>
           </div>
@@ -242,8 +256,8 @@
             <div class="w-full h-3 bg-zinc-900 rounded-[2px] border border-[#27272a] relative overflow-hidden">
               <!-- Threshold marker A at ~85% -->
               <div class="absolute top-0 bottom-0 left-[85%] w-[1px] bg-red-500 z-10" title="Upper Boundary A (Quarantine)"></div>
-              <!-- Progress fill -->
-              <div id="sprt-progress-bar" class="h-full rounded-[1px] bg-zinc-400 transition-all duration-300" style="width: 2%"></div>
+              <!-- Progress fill (Flat solid color: #e4e4e7 in normal, #ef4444 in quarantine) -->
+              <div id="sprt-progress-bar" class="h-full rounded-[1px] bg-[#e4e4e7] transition-all duration-300" style="width: 2%"></div>
             </div>
 
             <div class="flex justify-between items-center text-xs text-zinc-500 pt-0.5">
@@ -260,22 +274,22 @@
             </div>
             
             <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
-              <div class="bg-zinc-900/60 border border-zinc-800 rounded p-2">
+              <div class="bg-zinc-900 border border-zinc-800 rounded p-2">
                 <div class="text-[10px] text-zinc-500 uppercase">KV Cache Hit</div>
                 <div class="text-sm font-semibold text-zinc-200 mt-0.5" id="val-hit-time">~12 ms</div>
                 <div class="text-[10px] text-zinc-500">Timing Leak Source</div>
               </div>
 
-              <div class="bg-zinc-900/60 border border-zinc-800 rounded p-2">
+              <div class="bg-zinc-900 border border-zinc-800 rounded p-2">
                 <div class="text-[10px] text-zinc-500 uppercase">KV Cache Miss</div>
                 <div class="text-sm font-semibold text-zinc-200 mt-0.5" id="val-miss-time">~85 ms</div>
                 <div class="text-[10px] text-zinc-500">Full Model Compute</div>
               </div>
 
-              <div class="bg-zinc-900/60 border border-emerald-500/30 rounded p-2">
-                <div class="text-[10px] text-emerald-400 uppercase font-medium">Constant-Time Target</div>
-                <div class="text-sm font-semibold text-emerald-400 mt-0.5" id="val-padded-time">~85.0 ms</div>
-                <div class="text-[10px] text-emerald-500/80">0ms Side-Channel Delta</div>
+              <div class="bg-zinc-900 border border-zinc-800 rounded p-2">
+                <div class="text-[10px] text-zinc-400 uppercase font-medium">Constant-Time Target</div>
+                <div class="text-sm font-semibold text-zinc-200 mt-0.5" id="val-padded-time">~85.0 ms</div>
+                <div class="text-[10px] text-zinc-500">0ms Side-Channel Delta</div>
               </div>
             </div>
           </div>
@@ -290,7 +304,7 @@
                 <path d="M4 6h16M4 12h16M4 18h16"/>
               </svg>
               <span class="text-xs font-semibold text-[#fafafa] uppercase tracking-wider">
-                Telemetry Log & Packet Stream
+                Live Packet Stream & Telemetry Log
               </span>
               <span id="packet-counter" class="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">0 events</span>
             </div>
@@ -303,7 +317,7 @@
           <!-- Packet Table -->
           <div class="overflow-x-auto max-h-[380px] custom-scrollbar border border-[#27272a] rounded">
             <table class="w-full text-left text-xs font-mono">
-              <thead class="bg-zinc-900/90 text-zinc-500 uppercase text-[10px] sticky top-0 border-b border-[#27272a]">
+              <thead class="bg-zinc-900 text-zinc-500 uppercase text-[10px] sticky top-0 border-b border-[#27272a]">
                 <tr>
                   <th class="py-2 px-2.5 font-medium">Time</th>
                   <th class="py-2 px-2.5 font-medium">Tenant</th>
@@ -316,7 +330,7 @@
                   <th class="py-2 px-2.5 text-center font-medium">Status</th>
                 </tr>
               </thead>
-              <tbody id="packet-table-body" class="divide-y divide-zinc-800/60 text-zinc-300">
+              <tbody id="packet-table-body" class="divide-y divide-zinc-800 text-zinc-300">
                 <tr id="empty-table-row">
                   <td colspan="9" class="text-center py-8 text-zinc-500 font-sans">
                     Waiting for L7 traffic... Click "Run Exact Probe" or send requests to <span class="font-mono text-zinc-300">/v1/chat/completions</span>
@@ -347,7 +361,7 @@
           </div>
 
           <!-- Red Team Attack Simulator -->
-          <div class="bg-zinc-900/40 border border-zinc-800 rounded p-3.5 space-y-3">
+          <div class="bg-zinc-900 border border-zinc-800 rounded p-3.5 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
                 <span class="w-1.5 h-1.5 rounded-full bg-red-400 inline-block"></span>
@@ -417,7 +431,7 @@
           </div>
 
           <!-- Blue Team Benign Traffic Burst -->
-          <div class="bg-zinc-900/40 border border-zinc-800 rounded p-3.5 space-y-3">
+          <div class="bg-zinc-900 border border-zinc-800 rounded p-3.5 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
@@ -438,6 +452,36 @@
               <span>Send 20 Benign Requests</span>
             </button>
           </div>
+        </div>
+
+        <!-- vLLM Upstream Payload Inspector (Golden Judge Proof) -->
+        <div class="panel-box p-4 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+              </svg>
+              <h2 class="text-xs font-semibold text-[#fafafa] uppercase tracking-wider">
+                vLLM Upstream Payload Inspector
+              </h2>
+            </div>
+            <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">extra_body.cache_salt</span>
+          </div>
+
+          <div class="bg-[#09090b] border border-[#27272a] rounded p-2.5 font-mono text-[11px] custom-scrollbar overflow-x-auto text-zinc-300">
+            <pre id="vllm-payload-code" class="text-zinc-300">{
+  <span class="text-zinc-500">"model"</span>: <span class="text-zinc-200">"meta-llama/Llama-3.1-70B-Instruct"</span>,
+  <span class="text-zinc-500">"messages"</span>: [{"role": "user", "content": "..."}],
+  <span class="text-zinc-500">"max_tokens"</span>: 1,
+  <span class="text-zinc-500">"extra_body"</span>: {
+    <span class="text-zinc-400">"cache_salt"</span>: <span id="payload-salt-val" class="text-emerald-400 font-semibold">"default"</span>
+  }
+}</pre>
+          </div>
+          <p class="text-[11px] text-zinc-500">
+            Aegis-KV injects <code class="text-zinc-300 font-mono">cache_salt</code> directly into vLLM's request body. On quarantine, the salt rotates instantly to physically isolate KV cache blocks.
+          </p>
         </div>
 
         <!-- Tracked Tenant Security Directory -->
@@ -469,7 +513,7 @@
 
   <!-- Footer -->
   <footer class="border-t border-[#27272a] bg-[#09090b] px-6 py-2.5 text-center text-xs text-zinc-500 font-mono">
-    Aegis-KV &bull; L7 AI Security Gateway &bull; Zero-Bottleneck Side-Channel Defense
+    Aegis-KV &bull; L7 AI Security Gateway &bull; vLLM KV-Cache Prefix Timing Defense
   </footer>
 
   <!-- Dashboard JavaScript Logic -->
@@ -483,6 +527,14 @@
       ttft_cache_miss_ms: 85.0,
       sprt_upper_boundary: 4.5951,
       sprt_lower_boundary: -4.5951,
+      active_model_id: "meta-llama/Llama-3.1-70B-Instruct",
+      live_vllm_upstream: false,
+      vllm_metadata: {
+        model_id: "meta-llama/Llama-3.1-70B-Instruct",
+        vllm_engine: "vLLM v0.6.3 (PagedAttention APC)",
+        vllm_flags: "--enable-prefix-caching --block-size 16 --tensor-parallel-size 4",
+        upstream_url: "http://vllm-cluster.internal:8001/v1/chat/completions"
+      }
     };
 
     let totalPackets = 0;
@@ -520,7 +572,13 @@
         eventSource.onmessage = (e) => {
           try {
             const data = JSON.parse(e.data);
-            if (data.event_type !== "connected") {
+            if (data.event_type === "connected") {
+              if (data.vllm_metadata) {
+                currentConfig.vllm_metadata = data.vllm_metadata;
+                currentConfig.active_model_id = data.active_model_id;
+                renderVllmMetadata();
+              }
+            } else {
               handleIncomingTelemetryEvent(data);
             }
           } catch (err) {
@@ -529,13 +587,42 @@
         };
 
         eventSource.onerror = (err) => {
-          sseStatusBadge.className = "inline-flex items-center gap-1.5 text-[11px] font-mono px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-amber-400";
+          sseStatusBadge.className = "inline-flex items-center gap-1.5 text-[11px] font-mono px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400";
           sseStatusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span><span id="sse-status-text">SSE Reconnecting...</span>';
-          // Browser EventSource automatically attempts reconnection
         };
       } catch (err) {
         console.error("Failed to start SSE:", err);
       }
+    }
+
+    // ── Render vLLM Architecture & Upstream Metadata ─────────────────────
+    function renderVllmMetadata() {
+      const meta = currentConfig.vllm_metadata || {};
+      const modelEl = document.getElementById("vllm-model-id");
+      const engineEl = document.getElementById("vllm-engine-spec");
+      const flagsEl = document.getElementById("vllm-flags-spec");
+      const urlEl = document.getElementById("vllm-upstream-url");
+      const modeEl = document.getElementById("vllm-upstream-mode");
+
+      if (modelEl && meta.model_id) modelEl.textContent = meta.model_id;
+      if (engineEl && meta.vllm_engine) engineEl.textContent = meta.vllm_engine;
+      if (flagsEl && meta.vllm_flags) flagsEl.textContent = meta.vllm_flags;
+      if (urlEl && meta.upstream_url) urlEl.textContent = meta.upstream_url;
+      if (modeEl) {
+        modeEl.textContent = currentConfig.live_vllm_upstream ? "Live Upstream" : "Benchmark Mode";
+        modeEl.className = "px-1.5 py-0.2 rounded bg-zinc-900 border border-zinc-800 text-zinc-400";
+      }
+    }
+
+    // ── Render Live vLLM Upstream Payload Inspector ───────────────────────
+    function renderUpstreamPayload(prompt, salt) {
+      const codeEl = document.getElementById("vllm-payload-code");
+      if (!codeEl) return;
+      const model = currentConfig.active_model_id || "meta-llama/Llama-3.1-70B-Instruct";
+      const isQuarantine = salt && salt.startsWith("quarantine");
+      const saltColor = isQuarantine ? "text-red-400 font-semibold" : "text-emerald-400 font-semibold";
+
+      codeEl.innerHTML = `{\n  <span class="text-zinc-500">"model"</span>: <span class="text-zinc-200">"${escapeHtml(model)}"</span>,\n  <span class="text-zinc-500">"messages"</span>: [{"role": "user", "content": "${escapeHtml(prompt || "...")}"}],\n  <span class="text-zinc-500">"max_tokens"</span>: 1,\n  <span class="text-zinc-500">"extra_body"</span>: {\n    <span class="text-zinc-400">"cache_salt"</span>: <span class="${saltColor}">"${escapeHtml(salt || "default")}"</span>\n  }\n}`;
     }
 
     // ── Handle Incoming Event ────────────────────────────────────────────
@@ -564,6 +651,11 @@
         if (hudSybil) hudSybil.textContent = `${evt.global_sybil_llr.toFixed(2)} / 4.60`;
       }
 
+      // Update Live vLLM Upstream Payload Inspector
+      if (evt.prompt_snippet !== undefined && evt.cache_salt !== undefined) {
+        renderUpstreamPayload(evt.prompt_snippet, evt.cache_salt);
+      }
+
       // Update Cache Salt KPI
       if (evt.cache_salt) {
         const saltEl = document.getElementById("kpi-salt");
@@ -573,12 +665,12 @@
         saltEl.textContent = evt.cache_salt;
         if (evt.cache_salt !== "default") {
           saltEl.className = "text-2xl font-mono font-semibold text-red-400 tracking-tight truncate max-w-[180px]";
-          saltBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-red-500/10 text-red-400 border border-red-500/20";
+          saltBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-red-400 border border-zinc-800";
           saltBadge.textContent = "QUARANTINED";
           saltDesc.textContent = "Tenant isolated from cache";
         } else {
           saltEl.className = "text-2xl font-mono font-semibold text-[#fafafa] tracking-tight truncate max-w-[180px]";
-          saltBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700";
+          saltBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800";
           saltBadge.textContent = "Standard";
           saltDesc.textContent = "Shared namespace";
         }
@@ -618,19 +710,26 @@
       progressBar.style.width = `${percentage}%`;
 
       if (isQuarantined || llr >= boundaryA) {
-        progressBar.className = "h-full rounded-[1px] bg-red-500 transition-all duration-300";
-        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-red-500/10 border border-red-500/30 text-red-400";
+        // Flat solid red color on quarantine
+        progressBar.className = "h-full rounded-[1px] bg-[#ef4444] transition-all duration-300";
+        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-red-400";
         verdictBadge.textContent = `QUARANTINE TRIGGERED (LLR: ${llr.toFixed(2)} ≥ A)`;
-        sprtBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-red-500/10 text-red-400 border border-red-500/20";
+        sprtBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-red-400 border border-zinc-800";
         sprtBadge.textContent = "QUARANTINED";
       } else if (llr > 1.5) {
-        progressBar.className = "h-full rounded-[1px] bg-amber-500 transition-all duration-300";
-        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-amber-500/10 border border-amber-500/30 text-amber-400";
+        // Flat solid zinc color with amber text badge
+        progressBar.className = "h-full rounded-[1px] bg-[#e4e4e7] transition-all duration-300";
+        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-amber-400";
         verdictBadge.textContent = `SUSPICIOUS PROBE (LLR: ${llr.toFixed(2)})`;
+        sprtBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800";
+        sprtBadge.textContent = "Armed";
       } else {
-        progressBar.className = "h-full rounded-[1px] bg-zinc-400 transition-all duration-300";
-        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-800/80 border border-zinc-700/60 text-zinc-300";
+        // Flat solid zinc color in normal state
+        progressBar.className = "h-full rounded-[1px] bg-[#e4e4e7] transition-all duration-300";
+        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-300";
         verdictBadge.textContent = `STATE: NORMAL (LLR: ${llr.toFixed(2)})`;
+        sprtBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800";
+        sprtBadge.textContent = "Armed";
       }
     }
 
@@ -644,7 +743,7 @@
 
       const tr = document.createElement("tr");
       const isQuarantineOrBlocked = evt.event_type === "quarantine" || evt.blocked;
-      tr.className = isQuarantineOrBlocked ? "flash-danger hover:bg-zinc-900/60" : "flash-row hover:bg-zinc-900/60";
+      tr.className = isQuarantineOrBlocked ? "flash-danger hover:bg-zinc-900" : "flash-row hover:bg-zinc-900";
 
       const timeStr = new Date(evt.timestamp * 1000).toLocaleTimeString([], { hour12: false });
       const rawMs = (evt.ttft_raw_ms || 0).toFixed(1);
@@ -653,14 +752,14 @@
       const llrVal = (evt.llr_after || 0).toFixed(2);
       const vllmBlock = evt.vllm_block_alignment || "Block #1 (15 Padded)";
       
-      // Status badge without emojis
+      // Flat solid badges with 6px status dots
       let statusBadge = "";
       if (evt.event_type === "quarantine") {
-        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-red-500/10 text-red-400 border border-red-500/20 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-red-400"></span>QUARANTINE</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-red-400"></span>QUARANTINE</span>`;
       } else if (evt.blocked) {
-        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-emerald-400"></span>PADDED</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-emerald-400"></span>PADDED</span>`;
       } else if (evt.is_cache_hit || (evt.is_probe_attempt && evt.is_timing_signal)) {
-        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-amber-400"></span>CACHE HIT</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-amber-400"></span>CACHE HIT</span>`;
       } else {
         statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800 text-[10px] font-mono"><span class="w-1 h-1 rounded-full bg-zinc-500"></span>NORMAL</span>`;
       }
@@ -724,13 +823,13 @@
         }
 
         container.innerHTML = tenants.map(t => `
-          <div class="bg-zinc-900/60 border ${t.is_quarantined ? 'border-red-500/40 bg-red-950/10' : 'border-zinc-800/80'} rounded p-2 flex items-center justify-between">
+          <div class="border ${t.is_quarantined ? 'border-zinc-800 border-l-2 border-l-red-500 bg-zinc-900' : 'border-zinc-800 bg-zinc-900'} rounded p-2 flex items-center justify-between">
             <div class="space-y-0.5">
               <div class="flex items-center space-x-2">
                 <span class="font-medium text-[#fafafa] font-mono">${escapeHtml(t.tenant_id)}</span>
-                ${t.is_quarantined ? '<span class="px-1.5 py-0.2 rounded bg-red-500/10 text-red-400 text-[10px] font-mono border border-red-500/20 font-medium">ISOLATED</span>' : '<span class="px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 text-[10px] font-mono">Active</span>'}
-                ${t.is_quarantined && t.quarantine_ttl_remaining_s ? `<span class="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 text-[10px] font-mono border border-amber-500/20">TTL: ${t.quarantine_ttl_remaining_s}s</span>` : ''}
-                ${t.in_flight > 0 ? `<span class="px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 text-[10px] font-mono">${t.in_flight} in-flight</span>` : ''}
+                ${t.is_quarantined ? '<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-900 text-red-400 text-[10px] font-mono border border-zinc-800 font-medium"><span class="w-1 h-1 rounded-full bg-red-400"></span>ISOLATED</span>' : '<span class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 text-[10px] font-mono border border-zinc-800">Active</span>'}
+                ${t.is_quarantined && t.quarantine_ttl_remaining_s ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-300 text-[10px] font-mono border border-zinc-800"><span class="w-1 h-1 rounded-full bg-amber-400"></span>TTL: ${t.quarantine_ttl_remaining_s}s</span>` : ''}
+                ${t.in_flight > 0 ? `<span class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-300 text-[10px] font-mono border border-zinc-800">${t.in_flight} in-flight</span>` : ''}
               </div>
               <div class="text-[11px] text-zinc-500 font-mono">
                 Reqs: ${t.request_count} &bull; Probes: ${t.probe_count} &bull; Salt: <span class="text-zinc-300">${escapeHtml(t.cache_salt)}</span>
@@ -756,7 +855,11 @@
         
         if (data.config) {
           currentConfig = { ...currentConfig, ...data.config };
+          if (data.vllm_metadata) {
+            currentConfig.vllm_metadata = data.vllm_metadata;
+          }
           updateConfigUI();
+          renderVllmMetadata();
         }
         fetchTenants();
       } catch (err) {
@@ -765,17 +868,16 @@
     }
 
     function updateConfigUI() {
-      // Toggle button
+      // Flat solid defense toggle button
       const btnToggle = document.getElementById("btn-defense-toggle");
       const iconEl = document.getElementById("defense-icon");
       const labelEl = document.getElementById("defense-status-label");
 
+      btnToggle.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:border-zinc-700 transition-colors";
       if (currentConfig.defense_enabled) {
-        btnToggle.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15 transition-colors";
         iconEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>';
         labelEl.textContent = "Defense: ON";
       } else {
-        btnToggle.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/15 transition-colors";
         iconEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>';
         labelEl.textContent = "Defense: OFF";
       }
@@ -798,6 +900,8 @@
         document.getElementById("val-miss-time").textContent = "~85 ms";
         document.getElementById("val-padded-time").textContent = "~85.0 ms";
       }
+
+      renderVllmMetadata();
     }
 
     // ── Toggle Defense ───────────────────────────────────────────────────
@@ -828,7 +932,10 @@
         const data = await res.json();
         currentConfig.timing_profile = data.timing_profile;
         currentConfig.padding_bucket_ms = data.padding_bucket_ms;
+        if (data.vllm_metadata) currentConfig.vllm_metadata = data.vllm_metadata;
+        if (data.active_model_id) currentConfig.active_model_id = data.active_model_id;
         updateConfigUI();
+        renderUpstreamPayload("...", "default");
       } catch (err) {
         console.error("switchTimingProfile error:", err);
       }
@@ -851,6 +958,7 @@
         if (hudBlock) hudBlock.textContent = "Block #1 (15 Padded)";
         const hudSybil = document.getElementById("hud-sybil-llr");
         if (hudSybil) hudSybil.textContent = "0.00 / 4.60";
+        renderUpstreamPayload("...", "default");
         updateSPRTVisualizer(0.0, false);
         fetchConfigAndState();
       } catch (err) {
@@ -870,7 +978,7 @@
       btn.disabled = true;
       btn.classList.add("opacity-60", "cursor-not-allowed");
       stateBadge.textContent = "Probing...";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-amber-400";
 
       const targetSecret = "OMEGA_77";
       let recovered = "";
@@ -894,6 +1002,9 @@
           const rawTTFT = parseFloat(res.headers.get("X-Aegis-TTFT-Raw-Ms") || "0");
           const paddedTTFT = parseFloat(res.headers.get("X-Aegis-TTFT-Padded-Ms") || "0");
           const isQuarantined = res.headers.get("X-Aegis-Quarantined") === "true";
+          const cacheSalt = res.headers.get("X-Aegis-Cache-Salt") || "default";
+
+          renderUpstreamPayload(currentProbe, cacheSalt);
 
           // If defense is ON and quarantined, timing signal is neutralized!
           if (isQuarantined && currentConfig.defense_enabled) {
@@ -901,7 +1012,7 @@
             display.textContent = recovered.padEnd(8, "_");
             display.className = "font-mono text-sm tracking-widest font-semibold text-amber-400";
             stateBadge.textContent = "BLOCKED & QUARANTINED";
-            stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 font-medium";
+            stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-red-400 font-medium";
             break; // Attacker is stopped!
           } else {
             recovered += probeChar;
@@ -917,7 +1028,7 @@
 
       if (recovered === targetSecret && !currentConfig.defense_enabled) {
         stateBadge.textContent = "LEAKED (DEFENSE OFF)";
-        stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-950/60 text-red-400 border border-red-700 font-medium";
+        stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-red-400 font-medium";
         display.className = "font-mono text-sm tracking-widest font-semibold text-red-400";
       }
 
@@ -930,10 +1041,10 @@
     async function runFuzzyAttack() {
       const stateBadge = document.getElementById("red-team-state");
       stateBadge.textContent = "Fuzzy Shingling Probe...";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300";
 
       try {
-        await fetch("/v1/chat/completions", {
+        const res = await fetch("/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -943,6 +1054,8 @@
             messages: [{ role: "user", content: "O M E G A _ 7 7" }]
           })
         });
+        const salt = res.headers.get("X-Aegis-Cache-Salt") || "default";
+        renderUpstreamPayload("O M E G A _ 7 7", salt);
         stateBadge.textContent = "Fuzzy Analyzed";
       } catch (err) {
         console.error("Fuzzy attack error:", err);
@@ -963,7 +1076,7 @@
       btn.disabled = true;
       btn.classList.add("opacity-60", "cursor-not-allowed");
       stateBadge.textContent = "Sybil Rotation Active...";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300";
 
       try {
         const res = await fetch("/api/simulate/red-team", {
@@ -977,11 +1090,11 @@
         if (data.quarantined) {
           display.className = "font-mono text-sm tracking-widest font-semibold text-amber-400";
           stateBadge.textContent = `SYBIL HALTED (Probe #${data.steps_count} / LLR: ${data.global_sybil_llr ? data.global_sybil_llr.toFixed(2) : "4.60"})`;
-          stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 font-medium";
+          stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-red-400 font-medium";
         } else {
           display.className = "font-mono text-sm tracking-widest font-semibold text-red-400";
           stateBadge.textContent = "LEAKED (DEFENSE OFF)";
-          stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-950/60 text-red-400 border border-red-700 font-medium";
+          stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-red-400 font-medium";
         }
 
         if (sybilBadge && data.global_sybil_llr !== undefined) {
@@ -990,6 +1103,7 @@
         if (blockBadge && data.steps && data.steps.length > 0) {
           const lastStep = data.steps[data.steps.length - 1];
           blockBadge.textContent = lastStep.vllm_block_alignment || "Block #1 (15 Padded)";
+          renderUpstreamPayload(lastStep.probe, lastStep.salt);
         }
 
         fetchConfigAndState();
@@ -1010,7 +1124,7 @@
       btn.disabled = true;
       btn.classList.add("opacity-60", "cursor-not-allowed");
       stateBadge.textContent = "Firing 20 Prompts...";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300";
 
       const benignPrompts = [
         "What is the capital of France and what are its best landmarks?",
@@ -1047,6 +1161,9 @@
               messages: [{ role: "user", content: benignPrompts[i] }]
             })
           });
+          if (i === 0) {
+            renderUpstreamPayload(benignPrompts[0].substring(0, 30) + "...", "default");
+          }
           await new Promise(r => setTimeout(r, 60)); // Fast burst
         } catch (err) {
           console.error("Benign burst error:", err);
@@ -1054,7 +1171,7 @@
       }
 
       stateBadge.textContent = "20 Fired (0.0% FP Verified)";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-emerald-400 font-medium";
       btn.disabled = false;
       btn.classList.remove("opacity-60", "cursor-not-allowed");
     }

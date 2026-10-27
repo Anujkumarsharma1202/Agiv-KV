@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass, field
 from time import time
+from typing import Any
 
 
 @dataclass
@@ -19,7 +20,7 @@ class TelemetryEvent:
     timestamp: float = field(default_factory=time)
     tenant_id: str = ""
     event_type: str = ""             # "probe_detected" | "probe_miss" | "benign" | "quarantine"
-    ttft_raw_ms: float = 0.0         # Observed TTFT from mock LLM
+    ttft_raw_ms: float = 0.0         # Observed TTFT from mock LLM / vLLM
     ttft_adjusted_ms: float = 0.0    # After L4 jitter removal
     ttft_padded_ms: float = 0.0      # Effective TTFT (with defense padding if quarantined)
     padding_ms: float = 0.0          # Delay added by bucket padding
@@ -37,6 +38,9 @@ class TelemetryEvent:
     vllm_block_alignment: str = ""   # e.g. "Block #4 (15 Padded + 1 Target Token)"
     quarantine_ttl_remaining_s: float = 0.0  # Remaining quarantine cooldown TTL
     global_sybil_llr: float = 0.0    # Cross-tenant Sybil shield LLR
+    model_id: str = ""               # e.g. "meta-llama/Llama-3.1-70B-Instruct"
+    vllm_engine: str = ""            # e.g. "vLLM v0.6.3 (PagedAttention APC)"
+    upstream_payload: dict[str, Any] = field(default_factory=dict)  # Exact vLLM OpenAI body
 
     def to_dict(self) -> dict:
         """Serialize for JSON/SSE transport."""
@@ -62,6 +66,9 @@ class TelemetryEvent:
             "vllm_block_alignment": self.vllm_block_alignment,
             "quarantine_ttl_remaining_s": round(self.quarantine_ttl_remaining_s, 1),
             "global_sybil_llr": round(self.global_sybil_llr, 4),
+            "model_id": self.model_id,
+            "vllm_engine": self.vllm_engine,
+            "upstream_payload": self.upstream_payload,
         }
 
 
