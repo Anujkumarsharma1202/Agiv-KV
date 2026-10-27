@@ -9,7 +9,7 @@
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -23,31 +23,10 @@
             mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
-            brand: {
-              bg: '#080C14',
-              surface: '#0F172A',
-              card: '#131D33',
-              border: '#1E293B',
-              borderBright: '#334155',
-              accent: '#3B82F6',
-              accentGlow: 'rgba(59, 130, 246, 0.25)',
-              danger: '#EF4444',
-              dangerGlow: 'rgba(239, 68, 68, 0.25)',
-              success: '#10B981',
-              successGlow: 'rgba(16, 185, 129, 0.25)',
-              warning: '#F59E0B',
-              purple: '#8B5CF6',
-              purpleGlow: 'rgba(139, 92, 246, 0.25)',
-            }
-          },
-          animation: {
-            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'glow-red': 'glowRed 2s ease-in-out infinite alternate',
-          },
-          keyframes: {
-            glowRed: {
-              '0%': { boxShadow: '0 0 5px rgba(239, 68, 68, 0.2)' },
-              '100%': { boxShadow: '0 0 20px rgba(239, 68, 68, 0.6)' },
+            zinc: {
+              850: '#151518',
+              925: '#101013',
+              950: '#09090b',
             }
           }
         }
@@ -57,99 +36,102 @@
 
   <style>
     body {
-      background-color: #080C14;
-      color: #E2E8F0;
-      font-family: 'Inter', sans-serif;
+      background-color: #09090b;
+      color: #fafafa;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
     }
     .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #0F172A;
+      background: #09090b;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 3px;
+      background: #27272a;
+      border-radius: 2px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #475569;
+      background: #3f3f46;
     }
     .flash-row {
-      animation: flashHighlight 1.2s ease-out;
+      animation: flashHighlight 0.9s ease-out;
     }
     @keyframes flashHighlight {
-      0% { background-color: rgba(59, 130, 246, 0.25); }
+      0% { background-color: rgba(255, 255, 255, 0.05); }
       100% { background-color: transparent; }
     }
     .flash-danger {
-      animation: flashDanger 1.5s ease-out;
+      animation: flashDanger 1.2s ease-out;
     }
     @keyframes flashDanger {
-      0% { background-color: rgba(239, 68, 68, 0.35); }
+      0% { background-color: rgba(239, 68, 68, 0.15); }
       100% { background-color: transparent; }
     }
-    .glass-card {
-      background: linear-gradient(135deg, rgba(19, 29, 51, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(51, 65, 85, 0.6);
+    .panel-box {
+      background-color: #121215;
+      border: 1px solid #27272a;
+      border-radius: 4px;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+<body class="min-h-screen flex flex-col antialiased selection:bg-zinc-800 selection:text-white">
 
-  <!-- Top Navigation Header -->
-  <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-6 py-3.5">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+  <!-- Top Navigation Header (Compact 48px height) -->
+  <header class="h-12 border-b border-[#27272a] bg-[#09090b] sticky top-0 z-50 px-4 sm:px-6 flex items-center justify-between">
+    <div class="max-w-7xl w-full mx-auto flex items-center justify-between gap-4">
       
-      <!-- Brand & Status -->
-      <div class="flex items-center space-x-3.5">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-[1px] shadow-lg shadow-blue-500/20">
-          <div class="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center text-lg">
-            🛡️
-          </div>
+      <!-- Brand & Breadcrumb -->
+      <div class="flex items-center space-x-3">
+        <div class="w-6 h-6 rounded flex items-center justify-center bg-zinc-900 border border-zinc-800 text-zinc-300">
+          <svg class="w-3.5 h-3.5 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
         </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-1.5">
-              Aegis-KV <span class="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">v0.1.0 MVP</span>
-            </h1>
-          </div>
-          <p class="text-xs text-slate-400 font-medium">L7 AI Security Gateway &bull; KV-Cache Side-Channel Defense</p>
+        <div class="flex items-center space-x-2">
+          <span class="text-sm font-semibold text-[#fafafa] tracking-tight">Aegis-KV</span>
+          <span class="text-xs text-zinc-500 font-mono">/ l7-gateway</span>
+          <span class="text-[10px] font-mono text-zinc-500 border border-zinc-800 bg-zinc-900 rounded px-1.5 py-0.5">v0.1.0-mvp</span>
         </div>
       </div>
 
       <!-- Controls & Toggles -->
-      <div class="flex items-center flex-wrap gap-3">
+      <div class="flex items-center space-x-2.5">
         <!-- Live SSE Stream Indicator -->
-        <div id="sse-status-badge" class="flex items-center space-x-2 text-xs font-medium px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div id="sse-status-badge" class="inline-flex items-center gap-1.5 text-[11px] font-mono px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
           <span id="sse-status-text">SSE Stream Active</span>
         </div>
 
         <!-- Timing Profile Selector -->
-        <div class="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5 text-xs font-medium">
-          <button id="btn-profile-70b" onclick="switchTimingProfile('70B_vLLM')" class="px-2.5 py-1 rounded-md transition-all text-white bg-blue-600 shadow-sm">
+        <div class="inline-flex items-center bg-zinc-900 border border-zinc-800 rounded p-0.5 text-xs font-mono">
+          <button id="btn-profile-70b" onclick="switchTimingProfile('70B_vLLM')" class="px-2 py-0.5 rounded text-[11px] text-white bg-zinc-800 transition-colors font-medium">
             70B_vLLM
           </button>
-          <button id="btn-profile-edge" onclick="switchTimingProfile('0.5B_Edge')" class="px-2.5 py-1 rounded-md transition-all text-slate-400 hover:text-slate-200">
+          <button id="btn-profile-edge" onclick="switchTimingProfile('0.5B_Edge')" class="px-2 py-0.5 rounded text-[11px] text-zinc-400 hover:text-zinc-200 transition-colors font-medium">
             0.5B_Edge
           </button>
         </div>
 
         <!-- Defense Master Switch Button -->
-        <button id="btn-defense-toggle" onclick="toggleDefense()" class="flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all border shadow-sm bg-emerald-500/10 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/20">
-          <span id="defense-icon">🛡️</span>
+        <button id="btn-defense-toggle" onclick="toggleDefense()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15 transition-colors">
+          <span id="defense-icon" class="inline-flex items-center">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+          </span>
           <span id="defense-status-label">Defense: ON</span>
         </button>
 
         <!-- Reset Button -->
-        <button id="btn-reset-state" onclick="resetGatewayState()" title="Reset All Tenants & Telemetry" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/40 transition-colors flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        <button id="btn-reset-state" onclick="resetGatewayState()" title="Reset All Tenants & Telemetry" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs text-zinc-400 hover:text-zinc-200 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-colors">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
           </svg>
-          Reset Demo
+          <span>Reset Demo</span>
         </button>
       </div>
 
@@ -159,72 +141,68 @@
   <!-- Main Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-5">
     
-    <!-- KPI Overview Cards -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="kpi-section">
+    <!-- KPI Strip (Connected Horizontal Grid with 1px internal dividers) -->
+    <section class="panel-box grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#27272a]" id="kpi-section">
       
-      <!-- Card 1: Hot-Path Overhead -->
-      <div class="glass-card rounded-xl p-4 shadow-sm relative overflow-hidden group">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none"></div>
-        <div class="flex items-center justify-between text-xs font-medium text-slate-400">
-          <span class="uppercase tracking-wider">Hot-Path Overhead</span>
-          <span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono">Target &lt;0.10ms</span>
+      <!-- Metric 1: Hot-Path Overhead -->
+      <div class="p-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-xs font-medium">
+          <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Hot-Path Overhead</span>
+          <span class="text-[10px] font-mono text-emerald-400 px-1 py-0.2 rounded bg-emerald-500/10 border border-emerald-500/20">&lt;0.10ms Target</span>
         </div>
-        <div class="mt-2.5 flex items-baseline space-x-2">
-          <span id="kpi-overhead" class="text-3xl font-extrabold text-emerald-400 font-mono tracking-tight">0.082</span>
-          <span class="text-xs text-slate-400 font-mono">ms</span>
+        <div class="mt-2.5 flex items-baseline space-x-1.5">
+          <span id="kpi-overhead" class="text-2xl font-mono font-semibold text-[#fafafa] tracking-tight">0.082</span>
+          <span class="text-xs font-mono text-zinc-500">ms</span>
         </div>
-        <div class="mt-2 text-xs text-slate-400 flex items-center justify-between">
+        <div class="mt-2 text-xs text-zinc-500 flex items-center justify-between">
           <span>O(1) in-memory lookup</span>
-          <span class="text-emerald-400/80 font-medium font-mono text-[11px]" id="kpi-request-count">0 reqs</span>
+          <span class="text-zinc-400 font-mono text-[11px]" id="kpi-request-count">0 reqs</span>
         </div>
       </div>
 
-      <!-- Card 2: SPRT Engine Status -->
-      <div class="glass-card rounded-xl p-4 shadow-sm relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-xl pointer-events-none"></div>
-        <div class="flex items-center justify-between text-xs font-medium text-slate-400">
-          <span class="uppercase tracking-wider">SPRT LLR Engine</span>
-          <span id="kpi-sprt-badge" class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px]">Armed</span>
+      <!-- Metric 2: SPRT Engine Status -->
+      <div class="p-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-xs font-medium">
+          <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">SPRT LLR Engine</span>
+          <span id="kpi-sprt-badge" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">Armed</span>
         </div>
-        <div class="mt-2.5 flex items-baseline space-x-2">
-          <span id="kpi-max-llr" class="text-3xl font-extrabold text-blue-400 font-mono tracking-tight">0.00</span>
-          <span class="text-xs text-slate-400 font-mono">/ A=4.60</span>
+        <div class="mt-2.5 flex items-baseline space-x-1.5">
+          <span id="kpi-max-llr" class="text-2xl font-mono font-semibold text-[#fafafa] tracking-tight">0.00</span>
+          <span class="text-xs font-mono text-zinc-500">/ A=4.60</span>
         </div>
-        <div class="mt-2 text-xs text-slate-400 flex items-center justify-between">
+        <div class="mt-2 text-xs text-zinc-500 flex items-center justify-between">
           <span>Wald's Sequential Test</span>
-          <span class="text-slate-400 font-mono text-[11px]">α=0.01, β=0.01</span>
+          <span class="text-zinc-500 font-mono text-[11px]">α=0.01, β=0.01</span>
         </div>
       </div>
 
-      <!-- Card 3: Active Cache Salt -->
-      <div class="glass-card rounded-xl p-4 shadow-sm relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl pointer-events-none"></div>
-        <div class="flex items-center justify-between text-xs font-medium text-slate-400">
-          <span class="uppercase tracking-wider">Active Cache Salt</span>
-          <span id="kpi-salt-badge" class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-mono">Standard</span>
+      <!-- Metric 3: Active Cache Salt -->
+      <div class="p-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-xs font-medium">
+          <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Active Cache Salt</span>
+          <span id="kpi-salt-badge" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">Standard</span>
         </div>
-        <div class="mt-2.5 flex items-baseline space-x-2">
-          <span id="kpi-salt" class="text-xl sm:text-2xl font-bold text-purple-400 font-mono truncate max-w-[200px]" title="default">default</span>
+        <div class="mt-2.5 flex items-baseline space-x-1.5">
+          <span id="kpi-salt" class="text-2xl font-mono font-semibold text-[#fafafa] tracking-tight truncate max-w-[180px]" title="default">default</span>
         </div>
-        <div class="mt-2 text-xs text-slate-400 flex items-center justify-between">
-          <span id="kpi-salt-desc">Shared namespace</span>
-          <span id="kpi-quarantine-count" class="text-slate-400 text-[11px]">0 Quarantined</span>
+        <div class="mt-2 text-xs text-zinc-500 flex items-center justify-between">
+          <span id="kpi-salt-desc" class="text-zinc-400">Shared namespace</span>
+          <span id="kpi-quarantine-count" class="text-zinc-500 font-mono text-[11px]">0 Quarantined</span>
         </div>
       </div>
 
-      <!-- Card 4: False Positive Rate -->
-      <div class="glass-card rounded-xl p-4 shadow-sm relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-xl pointer-events-none"></div>
-        <div class="flex items-center justify-between text-xs font-medium text-slate-400">
-          <span class="uppercase tracking-wider">False Positive Rate</span>
-          <span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px]">Zero False Alarms</span>
+      <!-- Metric 4: False Positive Rate -->
+      <div class="p-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-xs font-medium">
+          <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">False Positive Rate</span>
+          <span class="text-[10px] font-mono text-emerald-400 px-1 py-0.2 rounded bg-emerald-500/10 border border-emerald-500/20">0.0% Guarantee</span>
         </div>
-        <div class="mt-2.5 flex items-baseline space-x-2">
-          <span id="kpi-fpr" class="text-3xl font-extrabold text-emerald-400 font-mono tracking-tight">0.0%</span>
+        <div class="mt-2.5 flex items-baseline space-x-1.5">
+          <span id="kpi-fpr" class="text-2xl font-mono font-semibold text-[#fafafa] tracking-tight">0.0%</span>
         </div>
-        <div class="mt-2 text-xs text-slate-400 flex items-center justify-between">
+        <div class="mt-2 text-xs text-zinc-500 flex items-center justify-between">
           <span>Benign traffic spared</span>
-          <span class="text-slate-400 text-[11px]" id="kpi-benign-count">0 benign</span>
+          <span class="text-zinc-500 font-mono text-[11px]" id="kpi-benign-count">0 benign</span>
         </div>
       </div>
 
@@ -237,63 +215,66 @@
       <div class="lg:col-span-7 space-y-5">
         
         <!-- SPRT Sequential Probability Ratio Visualizer -->
-        <div class="glass-card rounded-xl p-5 shadow-sm space-y-4">
+        <div class="panel-box p-4 space-y-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <span class="text-sm font-bold text-white flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                SPRT Decision Meter (Wald's Boundaries)
+              <svg class="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+              <span class="text-xs font-semibold text-[#fafafa] uppercase tracking-wider">
+                Sequential Probability Ratio Test (SPRT)
               </span>
             </div>
-            <div id="sprt-verdict-badge" class="px-2.5 py-1 rounded-md text-xs font-semibold font-mono bg-blue-500/10 border border-blue-500/30 text-blue-400">
-              STATE: BENIGN (LLR: 0.00)
+            <div id="sprt-verdict-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-800/80 border border-zinc-700/60 text-zinc-300">
+              STATE: NORMAL (LLR: 0.00)
             </div>
           </div>
 
           <!-- LLR Gauge Bar -->
-          <div class="space-y-2">
-            <div class="flex justify-between text-[11px] font-mono text-slate-400">
-              <span class="text-emerald-400 font-semibold">B = -4.60 (Accept Null / Safe)</span>
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-[11px] font-mono text-zinc-500">
+              <span class="text-zinc-400">B = -4.60 (Accept Null / Safe)</span>
               <span>Floor: 0.00</span>
-              <span class="text-red-400 font-semibold">A = +4.60 (Reject Null / Quarantine)</span>
+              <span class="text-red-400">A = +4.60 (Quarantine Threshold)</span>
             </div>
             
-            <div class="w-full h-4 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-800 relative">
+            <div class="w-full h-3 bg-zinc-900 rounded-[2px] border border-[#27272a] relative overflow-hidden">
               <!-- Threshold marker A at ~85% -->
-              <div class="absolute top-0 bottom-0 left-[85%] w-[2px] bg-red-500/70 z-10" title="Upper Boundary A (Quarantine)"></div>
+              <div class="absolute top-0 bottom-0 left-[85%] w-[1px] bg-red-500 z-10" title="Upper Boundary A (Quarantine)"></div>
               <!-- Progress fill -->
-              <div id="sprt-progress-bar" class="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300" style="width: 2%"></div>
+              <div id="sprt-progress-bar" class="h-full rounded-[1px] bg-zinc-400 transition-all duration-300" style="width: 2%"></div>
             </div>
 
-            <div class="flex justify-between items-center text-xs text-slate-400 pt-1">
-              <span class="text-[11px]">CUSUM floored at 0.00 (Benign traffic never causes false quarantine)</span>
-              <span class="font-mono text-white text-xs font-semibold" id="sprt-llr-value">LLR: 0.0000</span>
+            <div class="flex justify-between items-center text-xs text-zinc-500 pt-0.5">
+              <span class="text-[11px]">CUSUM floored at 0.00 (Zero false alarms on benign queries)</span>
+              <span class="font-mono text-[#fafafa] text-xs font-medium" id="sprt-llr-value">LLR: 0.0000</span>
             </div>
           </div>
 
           <!-- Side-Channel Timing Padding Inspector -->
-          <div class="pt-3 border-t border-slate-800/80">
-            <div class="text-xs font-semibold text-slate-300 mb-2 flex items-center justify-between">
+          <div class="pt-3 border-t border-[#27272a]">
+            <div class="text-xs font-medium text-zinc-400 mb-2 flex items-center justify-between">
               <span>L7 Timing Side-Channel Suppression (TTFT Bucketing)</span>
-              <span class="text-[11px] font-mono text-emerald-400 font-semibold" id="bucket-target-label">Protected Constant-Time Ceiling: ~85.0 ms</span>
+              <span class="text-[11px] font-mono text-zinc-400" id="bucket-target-label">Target Ceiling: ~85.0 ms</span>
             </div>
             
             <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
-              <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2">
-                <div class="text-[10px] text-slate-400 uppercase">KV Cache Hit</div>
-                <div class="text-base font-bold text-red-400 mt-0.5" id="val-hit-time">~12 ms</div>
-                <div class="text-[10px] text-slate-500">Timing Leak Source</div>
+              <div class="bg-zinc-900/60 border border-zinc-800 rounded p-2">
+                <div class="text-[10px] text-zinc-500 uppercase">KV Cache Hit</div>
+                <div class="text-sm font-semibold text-zinc-200 mt-0.5" id="val-hit-time">~12 ms</div>
+                <div class="text-[10px] text-zinc-500">Timing Leak Source</div>
               </div>
 
-              <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2">
-                <div class="text-[10px] text-slate-400 uppercase">KV Cache Miss</div>
-                <div class="text-base font-bold text-blue-400 mt-0.5" id="val-miss-time">~85 ms</div>
-                <div class="text-[10px] text-slate-500">Full Model Compute</div>
+              <div class="bg-zinc-900/60 border border-zinc-800 rounded p-2">
+                <div class="text-[10px] text-zinc-500 uppercase">KV Cache Miss</div>
+                <div class="text-sm font-semibold text-zinc-200 mt-0.5" id="val-miss-time">~85 ms</div>
+                <div class="text-[10px] text-zinc-500">Full Model Compute</div>
               </div>
 
-              <div class="bg-slate-900/80 border border-emerald-500/30 bg-emerald-500/5 rounded-lg p-2">
-                <div class="text-[10px] text-emerald-400 uppercase font-semibold">Padded (Protected)</div>
-                <div class="text-base font-bold text-emerald-400 mt-0.5" id="val-padded-time">~85.0 ms</div>
+              <div class="bg-zinc-900/60 border border-emerald-500/30 rounded p-2">
+                <div class="text-[10px] text-emerald-400 uppercase font-medium">Constant-Time Target</div>
+                <div class="text-sm font-semibold text-emerald-400 mt-0.5" id="val-padded-time">~85.0 ms</div>
                 <div class="text-[10px] text-emerald-500/80">0ms Side-Channel Delta</div>
               </div>
             </div>
@@ -302,43 +283,43 @@
         </div>
 
         <!-- Live L7 Request Packet Stream -->
-        <div class="glass-card rounded-xl p-5 shadow-sm space-y-3">
+        <div class="panel-box p-4 space-y-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <span class="text-sm font-bold text-white flex items-center gap-2">
-                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Live Packet Stream & Telemetry Log
+              <svg class="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+              <span class="text-xs font-semibold text-[#fafafa] uppercase tracking-wider">
+                Telemetry Log & Packet Stream
               </span>
-              <span id="packet-counter" class="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">0 events</span>
+              <span id="packet-counter" class="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">0 events</span>
             </div>
             
-            <button onclick="clearPacketTable()" class="text-xs text-slate-400 hover:text-white transition-colors">
-              Clear View
+            <button onclick="clearPacketTable()" class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+              Clear Log
             </button>
           </div>
 
           <!-- Packet Table -->
-          <div class="overflow-x-auto max-h-[380px] custom-scrollbar border border-slate-800/80 rounded-lg">
+          <div class="overflow-x-auto max-h-[380px] custom-scrollbar border border-[#27272a] rounded">
             <table class="w-full text-left text-xs font-mono">
-              <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] sticky top-0 border-b border-slate-800">
+              <thead class="bg-zinc-900/90 text-zinc-500 uppercase text-[10px] sticky top-0 border-b border-[#27272a]">
                 <tr>
-                  <th class="py-2 px-2.5">Time</th>
-                  <th class="py-2 px-2.5">Tenant</th>
-                  <th class="py-2 px-2.5">Prompt</th>
-                  <th class="py-2 px-2.5 text-cyan-400">vLLM Block</th>
-                  <th class="py-2 px-2.5 text-right">TTFT Raw</th>
-                  <th class="py-2 px-2.5 text-right">Effective</th>
-                  <th class="py-2 px-2.5 text-right">Padding</th>
-                  <th class="py-2 px-2.5 text-right">LLR</th>
-                  <th class="py-2 px-2.5 text-center">Status</th>
+                  <th class="py-2 px-2.5 font-medium">Time</th>
+                  <th class="py-2 px-2.5 font-medium">Tenant</th>
+                  <th class="py-2 px-2.5 font-medium">Prompt</th>
+                  <th class="py-2 px-2.5 font-medium">vLLM Block</th>
+                  <th class="py-2 px-2.5 text-right font-medium">TTFT Raw</th>
+                  <th class="py-2 px-2.5 text-right font-medium">Effective</th>
+                  <th class="py-2 px-2.5 text-right font-medium">Padding</th>
+                  <th class="py-2 px-2.5 text-right font-medium">LLR</th>
+                  <th class="py-2 px-2.5 text-center font-medium">Status</th>
                 </tr>
               </thead>
-              <tbody id="packet-table-body" class="divide-y divide-slate-800/50 text-slate-300">
+              <tbody id="packet-table-body" class="divide-y divide-zinc-800/60 text-zinc-300">
                 <tr id="empty-table-row">
-                  <td colspan="9" class="text-center py-8 text-slate-500 font-sans">
-                    Waiting for L7 traffic... Click "Run Red-Team Attack" or send requests to <span class="font-mono text-blue-400">/v1/chat/completions</span>
+                  <td colspan="9" class="text-center py-8 text-zinc-500 font-sans">
+                    Waiting for L7 traffic... Click "Run Exact Probe" or send requests to <span class="font-mono text-zinc-300">/v1/chat/completions</span>
                   </td>
                 </tr>
               </tbody>
@@ -351,105 +332,130 @@
       <!-- Right Column: Interactive Simulators & Security State (5 cols) -->
       <div class="lg:col-span-5 space-y-5">
         
-        <!-- Live Simulators Card -->
-        <div class="glass-card rounded-xl p-5 shadow-sm space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h2 class="text-sm font-bold text-white flex items-center gap-2">
-              <span>⚡</span> Live Red-Team vs. Blue-Team Simulator
-            </h2>
-            <span class="text-[10px] text-slate-400 font-mono">Hidden Secret: <strong class="text-purple-300">"OMEGA_77"</strong></span>
+        <!-- Live Simulators Card (Traffic Generator / Benchmark Runner) -->
+        <div class="panel-box p-4 space-y-4">
+          <div class="flex items-center justify-between border-b border-[#27272a] pb-2.5">
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              <h2 class="text-xs font-semibold text-[#fafafa] uppercase tracking-wider">
+                Traffic Generator & Benchmark Runner
+              </h2>
+            </div>
+            <span class="text-[11px] text-zinc-500 font-mono">Secret: <strong class="text-zinc-300">"OMEGA_77"</strong></span>
           </div>
 
           <!-- Red Team Attack Simulator -->
-          <div class="bg-red-950/20 border border-red-500/20 rounded-xl p-4 space-y-3">
+          <div class="bg-zinc-900/40 border border-zinc-800 rounded p-3.5 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                <span class="text-xs font-bold text-red-300 uppercase tracking-wider">Red-Team Side-Channel Attack</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-red-400 inline-block"></span>
+                <span class="text-xs font-semibold text-zinc-300 uppercase tracking-wider">Red-Team Timing Side-Channel</span>
               </div>
-              <span id="red-team-state" class="text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-400">Idle</span>
+              <span id="red-team-state" class="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">Idle</span>
             </div>
 
-            <p class="text-xs text-slate-400">
-              Attacker sends character-by-character prefixes to steal <code class="text-purple-300 font-bold">OMEGA_77</code> by measuring sub-millisecond cache hit TTFT (~12ms).
+            <p class="text-xs text-zinc-400">
+              Single-token & prefix probes measure cache hit TTFT (~12ms) to extract system instructions.
             </p>
 
             <!-- Extracted String Progress Display -->
-            <div class="bg-slate-950/80 border border-slate-800 rounded-lg p-2.5 flex items-center justify-between">
-              <span class="text-xs text-slate-400">Leaked Secret:</span>
-              <span id="extracted-secret-display" class="font-mono text-sm tracking-widest font-bold text-slate-500">________</span>
+            <div class="bg-[#09090b] border border-[#27272a] rounded p-2.5 flex items-center justify-between">
+              <span class="text-xs text-zinc-500">Leaked Secret Buffer:</span>
+              <span id="extracted-secret-display" class="font-mono text-sm tracking-widest font-semibold text-zinc-500">________</span>
             </div>
 
-            <!-- vLLM PagedAttention & Sybil Telemetry HUD (Upgrade 1 & 4) -->
+            <!-- vLLM PagedAttention & Sybil Telemetry HUD -->
             <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
-              <div class="bg-slate-950/90 border border-cyan-500/30 rounded-lg p-2 flex flex-col justify-between">
-                <div class="text-[10px] text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+              <div class="bg-[#09090b] border border-zinc-800 rounded p-2 flex flex-col justify-between">
+                <div class="text-[10px] text-zinc-500 uppercase tracking-wider flex items-center gap-1">
+                  <span class="w-1 h-1 rounded-full bg-zinc-400"></span>
                   vLLM APC Block
                 </div>
-                <div id="hud-vllm-block" class="text-cyan-300 font-semibold truncate mt-1 text-[11px]" title="vLLM PagedAttention 16-Token Physical Block Boundary">
+                <div id="hud-vllm-block" class="text-zinc-300 font-medium truncate mt-1 text-[11px]" title="vLLM PagedAttention 16-Token Physical Block Boundary">
                   Block #1 (15 Padded)
                 </div>
               </div>
-              <div class="bg-slate-950/90 border border-purple-500/30 rounded-lg p-2 flex flex-col justify-between">
-                <div class="text-[10px] text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+              <div class="bg-[#09090b] border border-zinc-800 rounded p-2 flex flex-col justify-between">
+                <div class="text-[10px] text-zinc-500 uppercase tracking-wider flex items-center gap-1">
+                  <span class="w-1 h-1 rounded-full bg-zinc-400"></span>
                   Global Sybil LLR
                 </div>
-                <div id="hud-sybil-llr" class="text-purple-300 font-semibold truncate mt-1 text-[11px]">
+                <div id="hud-sybil-llr" class="text-zinc-300 font-medium truncate mt-1 text-[11px]">
                   0.00 / 4.60
                 </div>
               </div>
             </div>
 
             <!-- 3 Attack Buttons: Exact, Fuzzy, and Sybil Multi-ID -->
-            <div class="grid grid-cols-3 gap-1.5">
-              <button id="btn-run-red-team" onclick="runRedTeamAttack()" class="bg-red-600 hover:bg-red-500 text-white font-medium text-xs py-2 px-1.5 rounded-lg transition-colors shadow-sm shadow-red-600/30 flex items-center justify-center gap-1" title="Single tenant exact prefix attack">
-                <span>🔴</span> Exact
+            <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+              <button id="btn-run-red-team" onclick="runRedTeamAttack()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-200 font-medium text-xs py-2 px-1 rounded transition-colors flex items-center justify-center gap-1" title="Single tenant exact prefix attack">
+                <svg class="w-3.5 h-3.5 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="m15 9-6 6"/>
+                  <path d="m9 9 6 6"/>
+                </svg>
+                <span>Run Exact Probe</span>
               </button>
-              <button id="btn-run-fuzzy-probe" onclick="runFuzzyAttack()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-medium text-xs py-2 px-1.5 rounded-lg transition-colors flex items-center justify-center gap-1" title="Test 3-Gram Shingling with space-mutated probe ('O M E G A')">
-                <span>🧩</span> Fuzzy
+              <button id="btn-run-fuzzy-probe" onclick="runFuzzyAttack()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 font-medium text-xs py-2 px-1 rounded transition-colors flex items-center justify-center gap-1" title="Test 3-Gram Shingling with mutated probe">
+                <svg class="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                <span>Run Fuzzy Probe</span>
               </button>
-              <button id="btn-run-sybil-attack" onclick="runSybilAttack()" class="bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-600 hover:to-indigo-500 text-white font-medium text-xs py-2 px-1.5 rounded-lg transition-all shadow-sm shadow-purple-600/30 flex items-center justify-center gap-1" title="Test Global Sybil Shield: Multi-tenant rotation attack with rotating IDs (sybil_bot_1, sybil_bot_2, ...)">
-                <span>🕵️</span> Sybil Attack
+              <button id="btn-run-sybil-attack" onclick="runSybilAttack()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 font-medium text-xs py-2 px-1 rounded transition-colors flex items-center justify-center gap-1" title="Multi-tenant rotation attack">
+                <svg class="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Run Sybil Rotation</span>
               </button>
             </div>
           </div>
 
           <!-- Blue Team Benign Traffic Burst -->
-          <div class="bg-blue-950/20 border border-blue-500/20 rounded-xl p-4 space-y-3">
+          <div class="bg-zinc-900/40 border border-zinc-800 rounded p-3.5 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                <span class="text-xs font-bold text-blue-300 uppercase tracking-wider">Blue-Team Benign Traffic Burst</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+                <span class="text-xs font-semibold text-zinc-300 uppercase tracking-wider">Blue-Team Benign Burst</span>
               </div>
-              <span id="blue-team-state" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">Idle</span>
+              <span id="blue-team-state" class="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">Idle</span>
             </div>
 
-            <p class="text-xs text-slate-400">
-              Fires 20 normal enterprise customer prompts to prove zero false positives (<code class="text-emerald-400">LLR = 0.00</code>, never quarantined).
+            <p class="text-xs text-zinc-400">
+              Generates 20 enterprise queries to verify zero false positives (LLR = 0.00, 0% quarantine rate).
             </p>
 
-            <button id="btn-run-blue-team" onclick="runBlueTeamBurst()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs py-2 px-3 rounded-lg transition-colors shadow-sm shadow-blue-600/30 flex items-center justify-center gap-1.5">
-              <span>🔵</span> Fire 20 Benign Prompts (Verify 0% FP)
+            <button id="btn-run-blue-team" onclick="runBlueTeamBurst()" class="w-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 hover:border-zinc-600 text-zinc-200 font-medium text-xs py-2 px-3 rounded transition-colors flex items-center justify-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span>Send 20 Benign Requests</span>
             </button>
           </div>
         </div>
 
         <!-- Tracked Tenant Security Directory -->
-        <div class="glass-card rounded-xl p-5 shadow-sm space-y-3">
+        <div class="panel-box p-4 space-y-3">
           <div class="flex items-center justify-between">
-            <h2 class="text-sm font-bold text-white flex items-center gap-2">
-              <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              In-Memory Tenant Security Directory
-            </h2>
-            <span id="tenant-count-badge" class="text-xs font-mono text-slate-400">0 tenants</span>
+              <h2 class="text-xs font-semibold text-[#fafafa] uppercase tracking-wider">
+                Tenant Directory
+              </h2>
+            </div>
+            <span id="tenant-count-badge" class="text-[11px] font-mono text-zinc-500">0 tenants</span>
           </div>
 
-          <div id="tenants-list" class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar text-xs">
-            <div class="text-slate-500 text-center py-4 font-sans text-xs">
+          <div id="tenants-list" class="space-y-1.5 max-h-[220px] overflow-y-auto custom-scrollbar text-xs">
+            <div class="text-zinc-500 text-center py-4 font-sans text-xs">
               No active tenant sessions yet.
             </div>
           </div>
@@ -462,8 +468,8 @@
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-slate-900 bg-slate-950/80 px-6 py-3 text-center text-xs text-slate-500 font-mono">
-    Aegis-KV &bull; Zero-Bottleneck L7 Security Gateway &bull; HackInHills MVP
+  <footer class="border-t border-[#27272a] bg-[#09090b] px-6 py-2.5 text-center text-xs text-zinc-500 font-mono">
+    Aegis-KV &bull; L7 AI Security Gateway &bull; Zero-Bottleneck Side-Channel Defense
   </footer>
 
   <!-- Dashboard JavaScript Logic -->
@@ -507,8 +513,8 @@
         eventSource = new EventSource("/api/telemetry/stream");
 
         eventSource.onopen = () => {
-          sseStatusBadge.className = "flex items-center space-x-2 text-xs font-medium px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400";
-          sseStatusText.textContent = "SSE Stream Live";
+          sseStatusBadge.className = "inline-flex items-center gap-1.5 text-[11px] font-mono px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300";
+          sseStatusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span><span id="sse-status-text">SSE Live</span>';
         };
 
         eventSource.onmessage = (e) => {
@@ -523,8 +529,8 @@
         };
 
         eventSource.onerror = (err) => {
-          sseStatusBadge.className = "flex items-center space-x-2 text-xs font-medium px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400";
-          sseStatusText.textContent = "SSE Reconnecting...";
+          sseStatusBadge.className = "inline-flex items-center gap-1.5 text-[11px] font-mono px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-amber-400";
+          sseStatusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span><span id="sse-status-text">SSE Reconnecting...</span>';
           // Browser EventSource automatically attempts reconnection
         };
       } catch (err) {
@@ -566,13 +572,13 @@
         
         saltEl.textContent = evt.cache_salt;
         if (evt.cache_salt !== "default") {
-          saltEl.className = "text-xl sm:text-2xl font-bold text-red-400 font-mono truncate max-w-[200px]";
-          saltBadge.className = "px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 text-[10px] font-mono border border-red-500/30";
+          saltEl.className = "text-2xl font-mono font-semibold text-red-400 tracking-tight truncate max-w-[180px]";
+          saltBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-red-500/10 text-red-400 border border-red-500/20";
           saltBadge.textContent = "QUARANTINED";
           saltDesc.textContent = "Tenant isolated from cache";
         } else {
-          saltEl.className = "text-xl sm:text-2xl font-bold text-purple-400 font-mono truncate max-w-[200px]";
-          saltBadge.className = "px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-mono";
+          saltEl.className = "text-2xl font-mono font-semibold text-[#fafafa] tracking-tight truncate max-w-[180px]";
+          saltBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700";
           saltBadge.textContent = "Standard";
           saltDesc.textContent = "Shared namespace";
         }
@@ -607,24 +613,23 @@
 
       // Boundary A is ~4.60
       const boundaryA = currentConfig.sprt_upper_boundary || 4.5951;
-      // Map 0 -> 0%, boundaryA -> 85%, >boundaryA -> up to 100%
       let percentage = (llr / boundaryA) * 85;
       percentage = Math.max(2, Math.min(100, percentage));
       progressBar.style.width = `${percentage}%`;
 
       if (isQuarantined || llr >= boundaryA) {
-        progressBar.className = "h-full rounded-full bg-gradient-to-r from-red-600 to-rose-400 transition-all duration-300 shadow-lg shadow-red-500/50";
-        verdictBadge.className = "px-2.5 py-1 rounded-md text-xs font-semibold font-mono bg-red-500/20 border border-red-500/40 text-red-300 animate-pulse";
-        verdictBadge.textContent = `🚨 QUARANTINE TRIGGERED (LLR: ${llr.toFixed(2)} ≥ A)`;
-        sprtBadge.className = "px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30 text-[10px]";
+        progressBar.className = "h-full rounded-[1px] bg-red-500 transition-all duration-300";
+        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-red-500/10 border border-red-500/30 text-red-400";
+        verdictBadge.textContent = `QUARANTINE TRIGGERED (LLR: ${llr.toFixed(2)} ≥ A)`;
+        sprtBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-red-500/10 text-red-400 border border-red-500/20";
         sprtBadge.textContent = "QUARANTINED";
       } else if (llr > 1.5) {
-        progressBar.className = "h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-400 transition-all duration-300";
-        verdictBadge.className = "px-2.5 py-1 rounded-md text-xs font-semibold font-mono bg-amber-500/20 border border-amber-500/40 text-amber-300";
-        verdictBadge.textContent = `⚠️ SUSPICIOUS PROBE (LLR: ${llr.toFixed(2)})`;
+        progressBar.className = "h-full rounded-[1px] bg-amber-500 transition-all duration-300";
+        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-amber-500/10 border border-amber-500/30 text-amber-400";
+        verdictBadge.textContent = `SUSPICIOUS PROBE (LLR: ${llr.toFixed(2)})`;
       } else {
-        progressBar.className = "h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300";
-        verdictBadge.className = "px-2.5 py-1 rounded-md text-xs font-semibold font-mono bg-blue-500/10 border border-blue-500/30 text-blue-400";
+        progressBar.className = "h-full rounded-[1px] bg-zinc-400 transition-all duration-300";
+        verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-800/80 border border-zinc-700/60 text-zinc-300";
         verdictBadge.textContent = `STATE: NORMAL (LLR: ${llr.toFixed(2)})`;
       }
     }
@@ -639,37 +644,37 @@
 
       const tr = document.createElement("tr");
       const isQuarantineOrBlocked = evt.event_type === "quarantine" || evt.blocked;
-      tr.className = isQuarantineOrBlocked ? "flash-danger hover:bg-red-950/20" : "flash-row hover:bg-slate-900/50";
+      tr.className = isQuarantineOrBlocked ? "flash-danger hover:bg-zinc-900/60" : "flash-row hover:bg-zinc-900/60";
 
-      const timeStr = new Date(evt.timestamp * 1000).toLocaleTimeString();
+      const timeStr = new Date(evt.timestamp * 1000).toLocaleTimeString([], { hour12: false });
       const rawMs = (evt.ttft_raw_ms || 0).toFixed(1);
       const effectiveMs = (evt.ttft_padded_ms || evt.ttft_raw_ms || 0).toFixed(1);
       const padMs = (evt.padding_ms || 0).toFixed(1);
       const llrVal = (evt.llr_after || 0).toFixed(2);
       const vllmBlock = evt.vllm_block_alignment || "Block #1 (15 Padded)";
       
-      // Status badge
+      // Status badge without emojis
       let statusBadge = "";
       if (evt.event_type === "quarantine") {
-        statusBadge = `<span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 text-[10px]">QUARANTINE</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-red-500/10 text-red-400 border border-red-500/20 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-red-400"></span>QUARANTINE</span>`;
       } else if (evt.blocked) {
-        statusBadge = `<span class="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px]">PADDED</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-emerald-400"></span>PADDED</span>`;
       } else if (evt.is_cache_hit || (evt.is_probe_attempt && evt.is_timing_signal)) {
-        statusBadge = `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px]">CACHE HIT</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-mono font-medium"><span class="w-1 h-1 rounded-full bg-amber-400"></span>CACHE HIT</span>`;
       } else {
-        statusBadge = `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">NORMAL</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800 text-[10px] font-mono"><span class="w-1 h-1 rounded-full bg-zinc-500"></span>NORMAL</span>`;
       }
 
       tr.innerHTML = `
-        <td class="py-2 px-2.5 text-slate-400 text-[11px]">${timeStr}</td>
-        <td class="py-2 px-2.5 text-slate-300 font-semibold truncate max-w-[85px]">${escapeHtml(evt.tenant_id || "anon")}</td>
-        <td class="py-2 px-2.5 text-slate-300 truncate max-w-[120px]" title="${escapeHtml(evt.prompt_snippet || "")}">"${escapeHtml(evt.prompt_snippet || "-")}"</td>
-        <td class="py-2 px-2.5 text-cyan-300 text-[10px] font-mono font-medium truncate max-w-[120px]" title="${escapeHtml(vllmBlock)}">${escapeHtml(vllmBlock)}</td>
-        <td class="py-2 px-2.5 text-right font-mono ${evt.is_cache_hit ? 'text-amber-400 font-bold' : 'text-slate-300'}">${rawMs}ms</td>
-        <td class="py-2 px-2.5 text-right font-mono font-bold ${evt.blocked ? 'text-emerald-400' : 'text-slate-300'}">${effectiveMs}ms</td>
-        <td class="py-2 px-2.5 text-right font-mono ${evt.padding_ms > 0 ? 'text-purple-400 font-semibold' : 'text-slate-500'}">+${padMs}ms</td>
-        <td class="py-2 px-2.5 text-right font-mono ${evt.llr_after >= 4.0 ? 'text-red-400 font-bold' : 'text-slate-300'}">${llrVal}</td>
-        <td class="py-2 px-2.5 text-center">${statusBadge}</td>
+        <td class="py-1.5 px-2.5 text-zinc-500 text-[11px] font-mono">${timeStr}</td>
+        <td class="py-1.5 px-2.5 text-zinc-300 font-mono font-medium truncate max-w-[85px]">${escapeHtml(evt.tenant_id || "anon")}</td>
+        <td class="py-1.5 px-2.5 text-zinc-300 truncate max-w-[130px]" title="${escapeHtml(evt.prompt_snippet || "")}">"${escapeHtml(evt.prompt_snippet || "-")}"</td>
+        <td class="py-1.5 px-2.5 text-zinc-400 text-[11px] font-mono truncate max-w-[120px]" title="${escapeHtml(vllmBlock)}">${escapeHtml(vllmBlock)}</td>
+        <td class="py-1.5 px-2.5 text-right font-mono ${evt.is_cache_hit ? 'text-amber-400 font-semibold' : 'text-zinc-400'}">${rawMs}ms</td>
+        <td class="py-1.5 px-2.5 text-right font-mono font-semibold ${evt.blocked ? 'text-emerald-400' : 'text-[#fafafa]'}">${effectiveMs}ms</td>
+        <td class="py-1.5 px-2.5 text-right font-mono ${evt.padding_ms > 0 ? 'text-zinc-300 font-medium' : 'text-zinc-600'}">+${padMs}ms</td>
+        <td class="py-1.5 px-2.5 text-right font-mono ${evt.llr_after >= 4.0 ? 'text-red-400 font-semibold' : 'text-zinc-400'}">${llrVal}</td>
+        <td class="py-1.5 px-2.5 text-center">${statusBadge}</td>
       `;
 
       tbody.insertBefore(tr, tbody.firstChild);
@@ -684,7 +689,7 @@
       const tbody = document.getElementById("packet-table-body");
       tbody.innerHTML = `
         <tr id="empty-table-row">
-          <td colspan="9" class="text-center py-8 text-slate-500 font-sans">
+          <td colspan="9" class="text-center py-8 text-zinc-500 font-sans">
             Table cleared. Waiting for new L7 requests...
           </td>
         </tr>
@@ -714,26 +719,26 @@
         }
 
         if (tenants.length === 0) {
-          container.innerHTML = `<div class="text-slate-500 text-center py-4 font-sans text-xs">No active tenant sessions yet.</div>`;
+          container.innerHTML = `<div class="text-zinc-500 text-center py-4 font-sans text-xs">No active tenant sessions yet.</div>`;
           return;
         }
 
         container.innerHTML = tenants.map(t => `
-          <div class="bg-slate-900/80 border ${t.is_quarantined ? 'border-red-500/40 bg-red-950/10' : 'border-slate-800'} rounded-lg p-2.5 flex items-center justify-between">
+          <div class="bg-zinc-900/60 border ${t.is_quarantined ? 'border-red-500/40 bg-red-950/10' : 'border-zinc-800/80'} rounded p-2 flex items-center justify-between">
             <div class="space-y-0.5">
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-white font-mono">${escapeHtml(t.tenant_id)}</span>
-                ${t.is_quarantined ? '<span class="px-1.5 py-0.2 rounded bg-red-500/20 text-red-300 text-[10px] font-mono border border-red-500/40">ISOLATED</span>' : '<span class="px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 text-[10px]">Active</span>'}
-                ${t.is_quarantined && t.quarantine_ttl_remaining_s ? `<span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono border border-amber-500/30">⏳ TTL: ${t.quarantine_ttl_remaining_s}s</span>` : ''}
-                ${t.in_flight > 0 ? `<span class="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-mono">${t.in_flight} in-flight</span>` : ''}
+                <span class="font-medium text-[#fafafa] font-mono">${escapeHtml(t.tenant_id)}</span>
+                ${t.is_quarantined ? '<span class="px-1.5 py-0.2 rounded bg-red-500/10 text-red-400 text-[10px] font-mono border border-red-500/20 font-medium">ISOLATED</span>' : '<span class="px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 text-[10px] font-mono">Active</span>'}
+                ${t.is_quarantined && t.quarantine_ttl_remaining_s ? `<span class="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 text-[10px] font-mono border border-amber-500/20">TTL: ${t.quarantine_ttl_remaining_s}s</span>` : ''}
+                ${t.in_flight > 0 ? `<span class="px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 text-[10px] font-mono">${t.in_flight} in-flight</span>` : ''}
               </div>
-              <div class="text-[11px] text-slate-400 font-mono">
-                Reqs: ${t.request_count} &bull; Probes: ${t.probe_count} &bull; Salt: <span class="text-purple-300">${escapeHtml(t.cache_salt)}</span>
+              <div class="text-[11px] text-zinc-500 font-mono">
+                Reqs: ${t.request_count} &bull; Probes: ${t.probe_count} &bull; Salt: <span class="text-zinc-300">${escapeHtml(t.cache_salt)}</span>
               </div>
             </div>
             <div class="text-right">
-              <div class="text-[10px] text-slate-400 uppercase">LLR</div>
-              <div class="font-mono font-bold ${t.llr >= 4.5 ? 'text-red-400' : 'text-blue-400'}">${t.llr.toFixed(2)}</div>
+              <div class="text-[10px] text-zinc-500 uppercase font-mono">LLR</div>
+              <div class="font-mono font-semibold ${t.llr >= 4.5 ? 'text-red-400' : 'text-zinc-300'}">${t.llr.toFixed(2)}</div>
             </div>
           </div>
         `).join('');
@@ -766,12 +771,12 @@
       const labelEl = document.getElementById("defense-status-label");
 
       if (currentConfig.defense_enabled) {
-        btnToggle.className = "flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all border shadow-sm bg-emerald-500/10 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/20";
-        iconEl.textContent = "🛡️";
+        btnToggle.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15 transition-colors";
+        iconEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>';
         labelEl.textContent = "Defense: ON";
       } else {
-        btnToggle.className = "flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all border shadow-sm bg-amber-500/10 border-amber-500/40 text-amber-300 hover:bg-amber-500/20";
-        iconEl.textContent = "⚠️";
+        btnToggle.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/15 transition-colors";
+        iconEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>';
         labelEl.textContent = "Defense: OFF";
       }
 
@@ -779,16 +784,16 @@
       const btn70b = document.getElementById("btn-profile-70b");
       const btnEdge = document.getElementById("btn-profile-edge");
       if (currentConfig.timing_profile === "0.5B_Edge") {
-        btnEdge.className = "px-2.5 py-1 rounded-md transition-all text-white bg-blue-600 shadow-sm";
-        btn70b.className = "px-2.5 py-1 rounded-md transition-all text-slate-400 hover:text-slate-200";
-        document.getElementById("bucket-target-label").textContent = "Constant-Time Target: 20.0 ms";
+        btnEdge.className = "px-2 py-0.5 rounded text-[11px] text-white bg-zinc-800 transition-colors font-medium";
+        btn70b.className = "px-2 py-0.5 rounded text-[11px] text-zinc-400 hover:text-zinc-200 transition-colors font-medium";
+        document.getElementById("bucket-target-label").textContent = "Target Ceiling: 20.0 ms";
         document.getElementById("val-hit-time").textContent = "~3 ms";
         document.getElementById("val-miss-time").textContent = "~18 ms";
         document.getElementById("val-padded-time").textContent = "20.0 ms";
       } else {
-        btn70b.className = "px-2.5 py-1 rounded-md transition-all text-white bg-blue-600 shadow-sm";
-        btnEdge.className = "px-2.5 py-1 rounded-md transition-all text-slate-400 hover:text-slate-200";
-        document.getElementById("bucket-target-label").textContent = "Protected Constant-Time Ceiling: ~85.0 ms";
+        btn70b.className = "px-2 py-0.5 rounded text-[11px] text-white bg-zinc-800 transition-colors font-medium";
+        btnEdge.className = "px-2 py-0.5 rounded text-[11px] text-zinc-400 hover:text-zinc-200 transition-colors font-medium";
+        document.getElementById("bucket-target-label").textContent = "Target Ceiling: ~85.0 ms";
         document.getElementById("val-hit-time").textContent = "~12 ms";
         document.getElementById("val-miss-time").textContent = "~85 ms";
         document.getElementById("val-padded-time").textContent = "~85.0 ms";
@@ -837,10 +842,11 @@
         maxObservedLLR = 0.0;
         benignCount = 0;
         document.getElementById("extracted-secret-display").textContent = "________";
-        document.getElementById("extracted-secret-display").className = "font-mono text-sm tracking-widest font-bold text-slate-500";
+        document.getElementById("extracted-secret-display").className = "font-mono text-sm tracking-widest font-semibold text-zinc-500";
         document.getElementById("red-team-state").textContent = "Idle";
-        document.getElementById("red-team-state").className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-400";
+        document.getElementById("red-team-state").className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400";
         document.getElementById("blue-team-state").textContent = "Idle";
+        document.getElementById("blue-team-state").className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400";
         const hudBlock = document.getElementById("hud-vllm-block");
         if (hudBlock) hudBlock.textContent = "Block #1 (15 Padded)";
         const hudSybil = document.getElementById("hud-sybil-llr");
@@ -864,7 +870,7 @@
       btn.disabled = true;
       btn.classList.add("opacity-60", "cursor-not-allowed");
       stateBadge.textContent = "Probing...";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 animate-pulse";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20";
 
       const targetSecret = "OMEGA_77";
       let recovered = "";
@@ -893,14 +899,14 @@
           if (isQuarantined && currentConfig.defense_enabled) {
             recovered += probeChar;
             display.textContent = recovered.padEnd(8, "_");
-            display.className = "font-mono text-sm tracking-widest font-bold text-amber-400";
+            display.className = "font-mono text-sm tracking-widest font-semibold text-amber-400";
             stateBadge.textContent = "BLOCKED & QUARANTINED";
-            stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/20 text-red-300 font-bold";
+            stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 font-medium";
             break; // Attacker is stopped!
           } else {
             recovered += probeChar;
             display.textContent = recovered.padEnd(8, "_");
-            display.className = "font-mono text-sm tracking-widest font-bold text-red-400";
+            display.className = "font-mono text-sm tracking-widest font-semibold text-red-400";
           }
 
           await new Promise(r => setTimeout(r, 120)); // Subtle pause for visualization
@@ -910,9 +916,9 @@
       }
 
       if (recovered === targetSecret && !currentConfig.defense_enabled) {
-        stateBadge.textContent = "LEAK SUCCESSFUL (DEFENSE OFF)";
-        stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-600 text-white font-bold";
-        display.className = "font-mono text-sm tracking-widest font-bold text-red-400";
+        stateBadge.textContent = "LEAKED (DEFENSE OFF)";
+        stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-950/60 text-red-400 border border-red-700 font-medium";
+        display.className = "font-mono text-sm tracking-widest font-semibold text-red-400";
       }
 
       btn.disabled = false;
@@ -924,7 +930,7 @@
     async function runFuzzyAttack() {
       const stateBadge = document.getElementById("red-team-state");
       stateBadge.textContent = "Fuzzy Shingling Probe...";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 animate-pulse";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700";
 
       try {
         await fetch("/v1/chat/completions", {
@@ -943,7 +949,7 @@
       }
     }
 
-    // ── Sybil Multi-Tenant Rotation Attack Simulator (Upgrade 1) ──────────
+    // ── Sybil Multi-Tenant Rotation Attack Simulator ──────────────────────
     async function runSybilAttack() {
       if (isAttacking) return;
       isAttacking = true;
@@ -956,8 +962,8 @@
 
       btn.disabled = true;
       btn.classList.add("opacity-60", "cursor-not-allowed");
-      stateBadge.textContent = "Sybil Multi-ID Attack In Progress...";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 animate-pulse";
+      stateBadge.textContent = "Sybil Rotation Active...";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700";
 
       try {
         const res = await fetch("/api/simulate/red-team", {
@@ -969,13 +975,13 @@
 
         display.textContent = (data.extracted_secret || "").padEnd(8, "_");
         if (data.quarantined) {
-          display.className = "font-mono text-sm tracking-widest font-bold text-amber-400";
-          stateBadge.textContent = `🛑 SYBIL ATTACK HALTED (Probe #${data.steps_count} / Global LLR: ${data.global_sybil_llr})`;
-          stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/30 text-purple-200 border border-purple-500/50 font-bold";
+          display.className = "font-mono text-sm tracking-widest font-semibold text-amber-400";
+          stateBadge.textContent = `SYBIL HALTED (Probe #${data.steps_count} / LLR: ${data.global_sybil_llr ? data.global_sybil_llr.toFixed(2) : "4.60"})`;
+          stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 font-medium";
         } else {
-          display.className = "font-mono text-sm tracking-widest font-bold text-red-400";
+          display.className = "font-mono text-sm tracking-widest font-semibold text-red-400";
           stateBadge.textContent = "LEAKED (DEFENSE OFF)";
-          stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-600 text-white font-bold";
+          stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-red-950/60 text-red-400 border border-red-700 font-medium";
         }
 
         if (sybilBadge && data.global_sybil_llr !== undefined) {
@@ -1004,7 +1010,7 @@
       btn.disabled = true;
       btn.classList.add("opacity-60", "cursor-not-allowed");
       stateBadge.textContent = "Firing 20 Prompts...";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 animate-pulse";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700";
 
       const benignPrompts = [
         "What is the capital of France and what are its best landmarks?",
@@ -1047,8 +1053,8 @@
         }
       }
 
-      stateBadge.textContent = "20 Fired (0% FP Verified)";
-      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold";
+      stateBadge.textContent = "20 Fired (0.0% FP Verified)";
+      stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium";
       btn.disabled = false;
       btn.classList.remove("opacity-60", "cursor-not-allowed");
     }
