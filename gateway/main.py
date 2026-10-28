@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import random
 import time
 import uuid
@@ -23,7 +24,7 @@ from typing import Any
 
 import httpx
 from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from gateway.config import GATEWAY_CONFIG, GatewayConfig
@@ -48,9 +49,13 @@ from gateway.state import (
 )
 from gateway.telemetry import TELEMETRY, TelemetryEvent
 
+# ── Environment & Deployment Mode ────────────────────────────────────────
+IS_VERCEL = os.environ.get("VERCEL") == "1"
+
 # ── Paths ────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_DIR = BASE_DIR / "static"
+INDEX_HTML = STATIC_DIR / "index.html"
 
 # ── FastAPI App ──────────────────────────────────────────────────────────
 app = FastAPI(
@@ -81,9 +86,14 @@ def build_vllm_upstream_payload(prompt: str, tenant: TenantState, config: Gatewa
 
 # ── Dashboard ────────────────────────────────────────────────────────────
 @app.get("/", tags=["Dashboard"])
-async def serve_dashboard() -> FileResponse:
-    """Serve the single-page SOC War-Room dashboard."""
-    return FileResponse(str(STATIC_DIR / "index.html"))
+async def serve_dashboard() -> Response:
+    """
+    Serve the single-page SOC War-Room dashboard.
+    Uses resilient absolute path resolution for local dev and Vercel serverless.
+    """
+    if INDEX_HTML.exists():
+        return HTMLResponse(content=INDEX_HTML.read_text(encoding="utf-8"))
+    return JSONResponse(status_code=404, content={"error": "Dashboard template not found"})
 
 
 # ── Health Check ─────────────────────────────────────────────────────────
@@ -103,6 +113,7 @@ async def health_check() -> JSONResponse:
         "live_vllm_upstream": cfg.live_vllm_upstream,
         "sprt_upper_boundary": round(cfg.sprt_upper_boundary, 4),
         "tenants_tracked": len(TENANTS),
+        "is_vercel": IS_VERCEL,
     })
 
 
@@ -343,13 +354,21 @@ async def execute_core_proxy(tenant_id: str, user_prompt: str) -> dict[str, Any]
             }
         }
 
-        asyncio.create_task(
-            _analyze_request(
+        # Vercel Serverless Safe-Mode: Await background math before freezing lambda
+        if IS_VERCEL:
+            await _analyze_request(
                 tenant, prompt_stripped, simulated_ttft_ms,
                 effective_ttft_ms, total_overhead_ms, is_cache_hit, was_padded,
                 vllm_block, upstream_payload,
             )
-        )
+        else:
+            asyncio.create_task(
+                _analyze_request(
+                    tenant, prompt_stripped, simulated_ttft_ms,
+                    effective_ttft_ms, total_overhead_ms, is_cache_hit, was_padded,
+                    vllm_block, upstream_payload,
+                )
+            )
 
         headers = {
             "X-Aegis-Hot-Path-Ms": f"{total_overhead_ms:.4f}",
@@ -411,10 +430,9 @@ async def chat_completions(request: Request) -> JSONResponse:
     return JSONResponse(content=result["response_body"], headers=result["headers"])
 
 
-# ── API: Tenant State (for dashboard) ────────────────────────────────────
-@app.get("/api/state", tags=["API"])
-async def get_all_state() -> JSONResponse:
-    """Return all tenant states and full vLLM integration metadata for dashboard."""
+# ── API: Tenant State Helper ─────────────────────────────────────────────
+def get_state_snapshot() -> dict[str, Any]:
+    """Capture full tenant directory and gateway configuration snapshot."""
     states = {}
     for tid, tenant in TENANTS.items():
         states[tid] = {
@@ -435,7 +453,7 @@ async def get_all_state() -> JSONResponse:
         }
 
     cfg = GATEWAY_CONFIG
-    return JSONResponse(content={
+    return {
         "tenants": states,
         "global_sybil_llr": round(get_global_sybil_llr(), 4),
         "vllm_metadata": cfg.vllm_metadata,
@@ -452,7 +470,14 @@ async def get_all_state() -> JSONResponse:
             "llr_decay_rate": cfg.llr_decay_rate,
             "global_sybil_llr": round(get_global_sybil_llr(), 4),
         },
-    })
+    }
+
+
+# ── API: Tenant State (for dashboard) ────────────────────────────────────
+@app.get("/api/state", tags=["API"])
+async def get_all_state() -> JSONResponse:
+    """Return all tenant states and full vLLM integration metadata for dashboard."""
+    return JSONResponse(content=get_state_snapshot())
 
 
 # ── API: Telemetry (for dashboard) ───────────────────────────────────────
@@ -537,6 +562,8 @@ async def update_config(request: Request) -> JSONResponse:
         "padding_bucket_ms": cfg.padding_bucket_ms,
         "ttft_cache_hit_ms": cfg.ttft_cache_hit_ms,
         "ttft_cache_miss_ms": cfg.ttft_cache_miss_ms,
+        "state_snapshot": get_state_snapshot(),
+        "telemetry_events": TELEMETRY.recent(50),
     })
 
 
@@ -546,7 +573,12 @@ async def reset_state() -> JSONResponse:
     """Reset all tenant states and telemetry. Used for demo resets."""
     reset_all_tenants()
     TELEMETRY.clear()
-    return JSONResponse(content={"status": "reset", "tenants_cleared": True})
+    return JSONResponse(content={
+        "status": "reset",
+        "tenants_cleared": True,
+        "state_snapshot": get_state_snapshot(),
+        "telemetry_events": TELEMETRY.recent(50),
+    })
 
 
 # ── API: Simulators (for one-click Demo & Benchmarking) ───────────────────
@@ -585,6 +617,8 @@ async def simulate_red_team(request: Request) -> JSONResponse:
             "vllm_block_alignment": res.get("vllm_block_alignment", ""),
             "vllm_metadata": cfg.vllm_metadata,
             "upstream_payload": res.get("upstream_payload", {}),
+            "state_snapshot": get_state_snapshot(),
+            "telemetry_events": TELEMETRY.recent(50),
         })
 
     if mode == "sybil":
@@ -635,6 +669,8 @@ async def simulate_red_team(request: Request) -> JSONResponse:
             "steps_count": len(steps),
             "steps": steps,
             "vllm_metadata": cfg.vllm_metadata,
+            "state_snapshot": get_state_snapshot(),
+            "telemetry_events": TELEMETRY.recent(50),
         })
 
     # Exact character-by-character prefix probe
@@ -679,6 +715,8 @@ async def simulate_red_team(request: Request) -> JSONResponse:
         "steps_count": len(steps),
         "steps": steps,
         "vllm_metadata": cfg.vllm_metadata,
+        "state_snapshot": get_state_snapshot(),
+        "telemetry_events": TELEMETRY.recent(50),
     })
 
 
@@ -747,4 +785,6 @@ async def simulate_blue_team(request: Request) -> JSONResponse:
         "quarantined": fpr_count > 0,
         "avg_hot_path_overhead_ms": round(total_overhead / count, 4),
         "vllm_metadata": GATEWAY_CONFIG.vllm_metadata,
+        "state_snapshot": get_state_snapshot(),
+        "telemetry_events": TELEMETRY.recent(50),
     })

@@ -543,13 +543,14 @@
     let maxObservedLLR = 0.0;
     let eventSource = null;
     let isAttacking = false;
+    let seenEventKeys = new Set();
 
     // ── Initialize Dashboard ─────────────────────────────────────────────
     document.addEventListener("DOMContentLoaded", () => {
-      fetchConfigAndState();
+      syncTelemetryAndState();
       connectSSE();
-      // Periodic fallback sync every 4 seconds
-      setInterval(fetchConfigAndState, 4000);
+      // Periodic fallback sync every 3 seconds for serverless resilience
+      setInterval(syncTelemetryAndState, 3000);
     });
 
     // ── SSE Connection ───────────────────────────────────────────────────
@@ -632,8 +633,8 @@
       document.getElementById("kpi-request-count").textContent = `${totalPackets} reqs`;
 
       // Update Overhead KPI
-      if (evt.hot_path_overhead_ms) {
-        document.getElementById("kpi-overhead").textContent = evt.hot_path_overhead_ms.toFixed(3);
+      if (evt.hot_path_overhead_ms !== undefined) {
+        document.getElementById("kpi-overhead").textContent = Number(evt.hot_path_overhead_ms).toFixed(3);
       }
 
       // Update LLR & SPRT Meter
@@ -648,7 +649,7 @@
       }
       if (evt.global_sybil_llr !== undefined) {
         const hudSybil = document.getElementById("hud-sybil-llr");
-        if (hudSybil) hudSybil.textContent = `${evt.global_sybil_llr.toFixed(2)} / 4.60`;
+        if (hudSybil) hudSybil.textContent = `${Number(evt.global_sybil_llr).toFixed(2)} / 4.60`;
       }
 
       // Update Live vLLM Upstream Payload Inspector
@@ -684,9 +685,6 @@
 
       // Add row to Packet Table
       addPacketTableRow(evt);
-
-      // Refresh tenants list
-      fetchTenants();
     }
 
     // ── Update SPRT Visualizer ───────────────────────────────────────────
@@ -701,7 +699,7 @@
         maxObservedLLR = llr;
       }
       maxLlrKpi.textContent = maxObservedLLR.toFixed(2);
-      llrValueText.textContent = `LLR: ${llr.toFixed(4)}`;
+      llrValueText.textContent = `LLR: ${Number(llr).toFixed(4)}`;
 
       // Boundary A is ~4.60
       const boundaryA = currentConfig.sprt_upper_boundary || 4.5951;
@@ -713,21 +711,21 @@
         // Flat solid red color on quarantine
         progressBar.className = "h-full rounded-[1px] bg-[#ef4444] transition-all duration-300";
         verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-red-400";
-        verdictBadge.textContent = `QUARANTINE TRIGGERED (LLR: ${llr.toFixed(2)} ≥ A)`;
+        verdictBadge.textContent = `QUARANTINE TRIGGERED (LLR: ${Number(llr).toFixed(2)} ≥ A)`;
         sprtBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-red-400 border border-zinc-800";
         sprtBadge.textContent = "QUARANTINED";
       } else if (llr > 1.5) {
         // Flat solid zinc color with amber text badge
         progressBar.className = "h-full rounded-[1px] bg-[#e4e4e7] transition-all duration-300";
         verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-amber-400";
-        verdictBadge.textContent = `SUSPICIOUS PROBE (LLR: ${llr.toFixed(2)})`;
+        verdictBadge.textContent = `SUSPICIOUS PROBE (LLR: ${Number(llr).toFixed(2)})`;
         sprtBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800";
         sprtBadge.textContent = "Armed";
       } else {
         // Flat solid zinc color in normal state
         progressBar.className = "h-full rounded-[1px] bg-[#e4e4e7] transition-all duration-300";
         verdictBadge.className = "px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-300";
-        verdictBadge.textContent = `STATE: NORMAL (LLR: ${llr.toFixed(2)})`;
+        verdictBadge.textContent = `STATE: NORMAL (LLR: ${Number(llr).toFixed(2)})`;
         sprtBadge.className = "text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800";
         sprtBadge.textContent = "Armed";
       }
@@ -735,6 +733,16 @@
 
     // ── Add Row to Packet Table ──────────────────────────────────────────
     function addPacketTableRow(evt) {
+      const evtKey = `${evt.timestamp || 0}_${evt.tenant_id || ""}_${evt.prompt_snippet || ""}_${evt.event_type || ""}_${evt.ttft_raw_ms || 0}`;
+      if (seenEventKeys.has(evtKey)) {
+        return; // Prevent duplicate rows from concurrent SSE + fallback polling
+      }
+      seenEventKeys.add(evtKey);
+      if (seenEventKeys.size > 200) {
+        const arr = Array.from(seenEventKeys);
+        seenEventKeys = new Set(arr.slice(arr.length - 100));
+      }
+
       const tbody = document.getElementById("packet-table-body");
       const emptyRow = document.getElementById("empty-table-row");
       if (emptyRow) {
@@ -745,7 +753,8 @@
       const isQuarantineOrBlocked = evt.event_type === "quarantine" || evt.blocked;
       tr.className = isQuarantineOrBlocked ? "flash-danger hover:bg-zinc-900" : "flash-row hover:bg-zinc-900";
 
-      const timeStr = new Date(evt.timestamp * 1000).toLocaleTimeString([], { hour12: false });
+      const timeVal = evt.timestamp ? (evt.timestamp * 1000) : Date.now();
+      const timeStr = new Date(timeVal).toLocaleTimeString([], { hour12: false });
       const rawMs = (evt.ttft_raw_ms || 0).toFixed(1);
       const effectiveMs = (evt.ttft_padded_ms || evt.ttft_raw_ms || 0).toFixed(1);
       const padMs = (evt.padding_ms || 0).toFixed(1);
@@ -794,78 +803,107 @@
         </tr>
       `;
       totalPackets = 0;
+      seenEventKeys.clear();
       document.getElementById("packet-counter").textContent = "0 events";
     }
 
-    // ── Fetch Tenants & Update Directory ─────────────────────────────────
-    async function fetchTenants() {
-      try {
-        const res = await fetch("/api/state");
-        const data = await res.json();
-        const container = document.getElementById("tenants-list");
-        const badge = document.getElementById("tenant-count-badge");
-        
-        const tenants = Object.values(data.tenants || {});
-        badge.textContent = `${tenants.length} tenants`;
+    // ── Render Tenants From Data ─────────────────────────────────────────
+    function renderTenantsFromData(tenantsMap, globalSybilLlr) {
+      const container = document.getElementById("tenants-list");
+      const badge = document.getElementById("tenant-count-badge");
+      const tenants = Object.values(tenantsMap || {});
+      badge.textContent = `${tenants.length} tenants`;
 
-        let qCount = 0;
-        tenants.forEach(t => { if (t.is_quarantined) qCount++; });
-        document.getElementById("kpi-quarantine-count").textContent = `${qCount} Quarantined`;
+      let qCount = 0;
+      tenants.forEach(t => { if (t.is_quarantined) qCount++; });
+      document.getElementById("kpi-quarantine-count").textContent = `${qCount} Quarantined`;
 
-        if (data.global_sybil_llr !== undefined) {
-          const hudSybil = document.getElementById("hud-sybil-llr");
-          if (hudSybil) hudSybil.textContent = `${data.global_sybil_llr.toFixed(2)} / 4.60`;
-        }
+      if (globalSybilLlr !== undefined) {
+        const hudSybil = document.getElementById("hud-sybil-llr");
+        if (hudSybil) hudSybil.textContent = `${Number(globalSybilLlr).toFixed(2)} / 4.60`;
+      }
 
-        if (tenants.length === 0) {
-          container.innerHTML = `<div class="text-zinc-500 text-center py-4 font-sans text-xs">No active tenant sessions yet.</div>`;
-          return;
-        }
+      if (tenants.length === 0) {
+        container.innerHTML = `<div class="text-zinc-500 text-center py-4 font-sans text-xs">No active tenant sessions yet.</div>`;
+        return;
+      }
 
-        container.innerHTML = tenants.map(t => `
-          <div class="border ${t.is_quarantined ? 'border-zinc-800 border-l-2 border-l-red-500 bg-zinc-900' : 'border-zinc-800 bg-zinc-900'} rounded p-2 flex items-center justify-between">
-            <div class="space-y-0.5">
-              <div class="flex items-center space-x-2">
-                <span class="font-medium text-[#fafafa] font-mono">${escapeHtml(t.tenant_id)}</span>
-                ${t.is_quarantined ? '<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-900 text-red-400 text-[10px] font-mono border border-zinc-800 font-medium"><span class="w-1 h-1 rounded-full bg-red-400"></span>ISOLATED</span>' : '<span class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 text-[10px] font-mono border border-zinc-800">Active</span>'}
-                ${t.is_quarantined && t.quarantine_ttl_remaining_s ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-300 text-[10px] font-mono border border-zinc-800"><span class="w-1 h-1 rounded-full bg-amber-400"></span>TTL: ${t.quarantine_ttl_remaining_s}s</span>` : ''}
-                ${t.in_flight > 0 ? `<span class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-300 text-[10px] font-mono border border-zinc-800">${t.in_flight} in-flight</span>` : ''}
-              </div>
-              <div class="text-[11px] text-zinc-500 font-mono">
-                Reqs: ${t.request_count} &bull; Probes: ${t.probe_count} &bull; Salt: <span class="text-zinc-300">${escapeHtml(t.cache_salt)}</span>
-              </div>
+      container.innerHTML = tenants.map(t => `
+        <div class="border ${t.is_quarantined ? 'border-zinc-800 border-l-2 border-l-red-500 bg-zinc-900' : 'border-zinc-800 bg-zinc-900'} rounded p-2 flex items-center justify-between">
+          <div class="space-y-0.5">
+            <div class="flex items-center space-x-2">
+              <span class="font-medium text-[#fafafa] font-mono">${escapeHtml(t.tenant_id)}</span>
+              ${t.is_quarantined ? '<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-900 text-red-400 text-[10px] font-mono border border-zinc-800 font-medium"><span class="w-1 h-1 rounded-full bg-red-400"></span>ISOLATED</span>' : '<span class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 text-[10px] font-mono border border-zinc-800">Active</span>'}
+              ${t.is_quarantined && t.quarantine_ttl_remaining_s ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-300 text-[10px] font-mono border border-zinc-800"><span class="w-1 h-1 rounded-full bg-amber-400"></span>TTL: ${t.quarantine_ttl_remaining_s}s</span>` : ''}
+              ${t.in_flight > 0 ? `<span class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-300 text-[10px] font-mono border border-zinc-800">${t.in_flight} in-flight</span>` : ''}
             </div>
-            <div class="text-right">
-              <div class="text-[10px] text-zinc-500 uppercase font-mono">LLR</div>
-              <div class="font-mono font-semibold ${t.llr >= 4.5 ? 'text-red-400' : 'text-zinc-300'}">${t.llr.toFixed(2)}</div>
+            <div class="text-[11px] text-zinc-500 font-mono">
+              Reqs: ${t.request_count} &bull; Probes: ${t.probe_count} &bull; Salt: <span class="text-zinc-300">${escapeHtml(t.cache_salt)}</span>
             </div>
           </div>
-        `).join('');
+          <div class="text-right">
+            <div class="text-[10px] text-zinc-500 uppercase font-mono">LLR</div>
+            <div class="font-mono font-semibold ${t.llr >= 4.5 ? 'text-red-400' : 'text-zinc-300'}">${Number(t.llr).toFixed(2)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
 
-      } catch (err) {
-        console.error("fetchTenants error:", err);
+    // ── Apply State Snapshot ─────────────────────────────────────────────
+    function applyStateData(data) {
+      if (!data) return;
+      if (data.config) {
+        currentConfig = { ...currentConfig, ...data.config };
+        if (data.vllm_metadata) currentConfig.vllm_metadata = data.vllm_metadata;
+        updateConfigUI();
+        renderVllmMetadata();
+      }
+      if (data.tenants) {
+        renderTenantsFromData(data.tenants, data.global_sybil_llr);
       }
     }
 
-    // ── Fetch Config & State ─────────────────────────────────────────────
-    async function fetchConfigAndState() {
+    // ── Apply Telemetry Events Batch ─────────────────────────────────────
+    function applyTelemetryEvents(events) {
+      if (!Array.isArray(events) || events.length === 0) return;
+      const sorted = [...events].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      sorted.forEach(evt => {
+        handleIncomingTelemetryEvent(evt);
+      });
+    }
+
+    // ── Hybrid Sync: State + Telemetry Fallback ──────────────────────────
+    async function syncTelemetryAndState(extraPayload = null) {
       try {
-        const res = await fetch("/api/state");
-        const data = await res.json();
-        
-        if (data.config) {
-          currentConfig = { ...currentConfig, ...data.config };
-          if (data.vllm_metadata) {
-            currentConfig.vllm_metadata = data.vllm_metadata;
-          }
-          updateConfigUI();
-          renderVllmMetadata();
+        if (extraPayload) {
+          if (extraPayload.state_snapshot) applyStateData(extraPayload.state_snapshot);
+          if (extraPayload.telemetry_events) applyTelemetryEvents(extraPayload.telemetry_events);
         }
-        fetchTenants();
+
+        const [stateRes, telemRes] = await Promise.all([
+          fetch("/api/state"),
+          fetch("/api/telemetry")
+        ]);
+
+        if (stateRes.ok) {
+          const stateData = await stateRes.json();
+          applyStateData(stateData);
+        }
+
+        if (telemRes.ok) {
+          const telemData = await telemRes.json();
+          if (telemData && Array.isArray(telemData.events)) {
+            applyTelemetryEvents(telemData.events);
+          }
+        }
       } catch (err) {
-        console.error("fetchConfigAndState error:", err);
+        console.error("syncTelemetryAndState error:", err);
       }
     }
+
+    // Legacy aliases for backward compatibility
+    async function fetchTenants() { await syncTelemetryAndState(); }
+    async function fetchConfigAndState() { await syncTelemetryAndState(); }
 
     function updateConfigUI() {
       // Flat solid defense toggle button
@@ -916,6 +954,7 @@
         const data = await res.json();
         currentConfig.defense_enabled = data.defense_enabled;
         updateConfigUI();
+        await syncTelemetryAndState(data);
       } catch (err) {
         console.error("toggleDefense error:", err);
       }
@@ -936,6 +975,7 @@
         if (data.active_model_id) currentConfig.active_model_id = data.active_model_id;
         updateConfigUI();
         renderUpstreamPayload("...", "default");
+        await syncTelemetryAndState(data);
       } catch (err) {
         console.error("switchTimingProfile error:", err);
       }
@@ -944,7 +984,6 @@
     // ── Reset Gateway State ──────────────────────────────────────────────
     async function resetGatewayState() {
       try {
-        await fetch("/api/reset", { method: "POST" });
         clearPacketTable();
         maxObservedLLR = 0.0;
         benignCount = 0;
@@ -960,7 +999,10 @@
         if (hudSybil) hudSybil.textContent = "0.00 / 4.60";
         renderUpstreamPayload("...", "default");
         updateSPRTVisualizer(0.0, false);
-        fetchConfigAndState();
+
+        const res = await fetch("/api/reset", { method: "POST" });
+        const data = await res.json();
+        await syncTelemetryAndState(data);
       } catch (err) {
         console.error("resetGatewayState error:", err);
       }
@@ -1001,8 +1043,32 @@
 
           const rawTTFT = parseFloat(res.headers.get("X-Aegis-TTFT-Raw-Ms") || "0");
           const paddedTTFT = parseFloat(res.headers.get("X-Aegis-TTFT-Padded-Ms") || "0");
+          const padMs = parseFloat(res.headers.get("X-Aegis-Padding-Ms") || "0");
           const isQuarantined = res.headers.get("X-Aegis-Quarantined") === "true";
           const cacheSalt = res.headers.get("X-Aegis-Cache-Salt") || "default";
+          const llrVal = parseFloat(res.headers.get("X-Aegis-LLR") || "0");
+          const vllmBlock = res.headers.get("X-Aegis-vLLM-Block-Alignment") || "";
+          const hotPathMs = parseFloat(res.headers.get("X-Aegis-Hot-Path-Ms") || "0");
+          const isCacheHit = res.headers.get("X-Aegis-Cache-Hit") === "true";
+
+          // Immediate telemetry display update for serverless
+          handleIncomingTelemetryEvent({
+            tenant_id: "red_team_attacker",
+            event_type: isQuarantined ? "quarantine" : (isCacheHit ? "probe_detected" : "probe_miss"),
+            timestamp: Date.now() / 1000,
+            ttft_raw_ms: rawTTFT,
+            ttft_padded_ms: paddedTTFT,
+            padding_ms: padMs,
+            llr_after: llrVal,
+            cache_salt: cacheSalt,
+            hot_path_overhead_ms: hotPathMs,
+            prompt_snippet: currentProbe,
+            is_probe_attempt: true,
+            is_timing_signal: isCacheHit,
+            is_cache_hit: isCacheHit,
+            blocked: isQuarantined,
+            vllm_block_alignment: vllmBlock,
+          });
 
           renderUpstreamPayload(currentProbe, cacheSalt);
 
@@ -1032,6 +1098,7 @@
         display.className = "font-mono text-sm tracking-widest font-semibold text-red-400";
       }
 
+      await syncTelemetryAndState();
       btn.disabled = false;
       btn.classList.remove("opacity-60", "cursor-not-allowed");
       isAttacking = false;
@@ -1057,6 +1124,7 @@
         const salt = res.headers.get("X-Aegis-Cache-Salt") || "default";
         renderUpstreamPayload("O M E G A _ 7 7", salt);
         stateBadge.textContent = "Fuzzy Analyzed";
+        await syncTelemetryAndState();
       } catch (err) {
         console.error("Fuzzy attack error:", err);
       }
@@ -1089,7 +1157,7 @@
         display.textContent = (data.extracted_secret || "").padEnd(8, "_");
         if (data.quarantined) {
           display.className = "font-mono text-sm tracking-widest font-semibold text-amber-400";
-          stateBadge.textContent = `SYBIL HALTED (Probe #${data.steps_count} / LLR: ${data.global_sybil_llr ? data.global_sybil_llr.toFixed(2) : "4.60"})`;
+          stateBadge.textContent = `SYBIL HALTED (Probe #${data.steps_count} / LLR: ${data.global_sybil_llr ? Number(data.global_sybil_llr).toFixed(2) : "4.60"})`;
           stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-red-400 font-medium";
         } else {
           display.className = "font-mono text-sm tracking-widest font-semibold text-red-400";
@@ -1098,7 +1166,7 @@
         }
 
         if (sybilBadge && data.global_sybil_llr !== undefined) {
-          sybilBadge.textContent = `${data.global_sybil_llr.toFixed(2)} / 4.60`;
+          sybilBadge.textContent = `${Number(data.global_sybil_llr).toFixed(2)} / 4.60`;
         }
         if (blockBadge && data.steps && data.steps.length > 0) {
           const lastStep = data.steps[data.steps.length - 1];
@@ -1106,7 +1174,7 @@
           renderUpstreamPayload(lastStep.probe, lastStep.salt);
         }
 
-        fetchConfigAndState();
+        await syncTelemetryAndState(data);
       } catch (err) {
         console.error("Sybil attack error:", err);
       } finally {
@@ -1172,6 +1240,8 @@
 
       stateBadge.textContent = "20 Fired (0.0% FP Verified)";
       stateBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-emerald-400 font-medium";
+      await new Promise(r => setTimeout(r, 200));
+      await syncTelemetryAndState();
       btn.disabled = false;
       btn.classList.remove("opacity-60", "cursor-not-allowed");
     }
