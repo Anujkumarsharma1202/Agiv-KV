@@ -47,6 +47,7 @@ from gateway.state import (
     update_global_sybil_llr,
     record_global_probe,
 )
+from gateway.dashboard_html import get_dashboard_html
 from gateway.telemetry import TELEMETRY, TelemetryEvent
 
 # ── Environment & Deployment Mode ────────────────────────────────────────
@@ -63,6 +64,29 @@ app = FastAPI(
     description="L7 AI Security Gateway — KV-Cache Side-Channel Defense for vLLM",
     version="0.1.0",
 )
+
+
+# ── Vercel Path Normalization Middleware ─────────────────────────────────
+@app.middleware("http")
+async def vercel_path_normalization_middleware(request: Request, call_next):
+    """
+    Normalize paths rewritten by Vercel serverless functions.
+    - Routes like '', '/api', '/api/index', '/api/index.py' normalize to '/'
+    - Routes prefixed with '/api/index.py/' strip that prefix so sub-routes match cleanly
+    """
+    path = request.scope.get("path", "")
+    if path in ("", "/api", "/api/index", "/api/index.py", "/api/index.py/"):
+        request.scope["path"] = "/"
+    elif path.startswith("/api/index.py/"):
+        request.scope["path"] = path[len("/api/index.py"):]
+    elif path.startswith("/api/index/"):
+        request.scope["path"] = path[len("/api/index"):]
+
+    if "raw_path" in request.scope:
+        request.scope["raw_path"] = request.scope["path"].encode("ascii", errors="replace")
+
+    return await call_next(request)
+
 
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -86,14 +110,14 @@ def build_vllm_upstream_payload(prompt: str, tenant: TenantState, config: Gatewa
 
 # ── Dashboard ────────────────────────────────────────────────────────────
 @app.get("/", tags=["Dashboard"])
+@app.get("/api/index.py", tags=["Dashboard"])
+@app.get("/index.html", tags=["Dashboard"])
 async def serve_dashboard() -> Response:
     """
     Serve the single-page SOC War-Room dashboard.
-    Uses resilient absolute path resolution for local dev and Vercel serverless.
+    Uses resilient disk read with embedded fallback to guarantee 100% availability on Vercel.
     """
-    if INDEX_HTML.exists():
-        return HTMLResponse(content=INDEX_HTML.read_text(encoding="utf-8"))
-    return JSONResponse(status_code=404, content={"error": "Dashboard template not found"})
+    return HTMLResponse(content=get_dashboard_html())
 
 
 # ── Health Check ─────────────────────────────────────────────────────────
